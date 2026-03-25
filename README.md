@@ -2,6 +2,13 @@
 
 用于按公司分类抓取腾讯招聘官网岗位信息，支持配置化扩展与增量写库。
 
+## 快速上手顺序
+1. **配置数据库**：执行 `sql.sql` 初始化结构，确保 `company/category/job` 三表可用。
+2. **配置环境变量**：创建 `.env` 并写入数据库连接信息。
+3. **准备规则 JSON**：在 `rules/company.json` 为目标公司新增配置，可直接复制示例条目，也可以完全删除示例自行编写。
+4. **安装依赖并运行**：安装 `requirements.txt`，随后执行 `python main.py` 完成交互式抓取。
+5. **按需维护**：使用 Web/TUI 编辑器调整规则或运行重排脚本维护历史数据。
+
 ## 目录
 - [环境要求](#环境要求)
 - [安装与配置](#安装与配置)
@@ -17,21 +24,13 @@
 - 可访问腾讯招聘接口的网络环境
 
 ## 安装与配置
-1. **克隆项目并安装依赖**
+- **配置数据库**
+  - 执行 `sql.sql`，初始化 `company/category/job` 结构与索引；首次使用可在 `category` 中填充叶子分类与 `categoryid`。
+  - 若已有历史数据，提前备份并确保 `categoryid` 与目标官网分类 ID 一一对应。
 
-```bash
-pip install -r requirements.txt
-```
-
-2. **复制环境变量模板**
-
-```bash
-copy .env.example .env  # Windows
-# 或
-cp .env.example .env    # macOS/Linux
-```
-
-根据自身环境填写 `.env`，字段说明如下：
+- **配置环境变量**
+  - 复制 `.env.example` 为 `.env`，并写入数据库地址/端口/凭据。
+  - 支持直接通过系统环境变量覆盖，下表给出了所有必填项：
 
 | 变量名        | 说明                       | 默认值 |
 |---------------|----------------------------|--------|
@@ -41,16 +40,17 @@ cp .env.example .env    # macOS/Linux
 | `DB_PASSWORD` | 数据库密码                 | （空） |
 | `DB_NAME`     | 数据库名称                 | job_system |
 
-> 任何敏感信息都放在 `.env`，文件已在 `.gitignore` 中忽略，避免泄漏。
+- **准备规则文件**
+  - `rules/company.json` 管理全部公司配置。可直接复制示例条目接入新官网；若不需要示例，也可以删除或替换为自己的配置。
+  - `extra.default_category_id` 与 `extra.default_api_category_id` 需成对设置，用于无叶子分类场景。
 
-3. **准备规则文件**
-   - `rules/company.json` 存放各公司的 API 规则。
-   - `extra.default_category_id`（数据库 ID）与 `extra.default_api_category_id`（接口分类 ID，可为任意字符串）需要成对配置，便于兜底。
+- **安装依赖**
 
-4. **数据库准备**
-   - 执行 `sql.sql` 初始化数据结构。
-   - 确保 `categoryid` 值与官网接口一致，必要时可用 `crawler.utils.normalize_category_id` 清洗并统一大小写。
-   - `category` 表中的 `crawled_job_count`（实际写入 job 表的数量）与 `official_job_count`（上一次爬虫抓取到的总条数）由程序在每次抓取后自动回写，首次可全部置 0 作为基线。
+```bash
+pip install -r requirements.txt
+```
+
+完成以上配置后，可进入“运行方式”一节按提示启动爬虫。
 
 ## 运行方式
 
@@ -104,6 +104,7 @@ python main.py --rules rules/company.json [--env-file .env] [--dry-run]
 - `default_category_id`: 当数据库没有叶子分类时仍需写库的默认 DB 分类 ID。
 - `default_api_category_id`: 与上项配对的接口分类 ID，可根据官网实际格式填写。
 - `headers/list_headers/detail_headers`: 可选 HTTP 头，支持 `${ENV_VAR}`。
+- **示例条目说明**：`rules/company.json` 中的示例公司对象（`company_id` 为 `CXXX`）仅用于演示 JSON 结构，字段含义如下，可复制后编辑；若不需要也可以删除：
 
 ## 日志与增量策略
 - HTTP 客户端自带节流及重试，若响应不是合法 JSON，会记录状态码与片段并重试。
@@ -123,6 +124,20 @@ pytest
 测试涵盖时间解析、分类兜底、HTTP JSON 失败重试等关键逻辑，建议在修改规则或核心代码后运行。
 
 ## 数据维护
+
+- **规则可视化编辑（Web）**：运行内置 Flask 服务即可在浏览器中编辑 `rules/company.json`，支持实时校验与保存。
+
+```bash
+python tools/rules_frontend_server.py --host 127.0.0.1 --port 8000
+```
+
+打开 `http://127.0.0.1:8000/` 后即可查看规则列表、编辑字段或新增规则，保存时会触发 JSON Schema 校验并同步到文件。
+
+- **规则校验**：修改 `rules/company.json` 后，建议先通过 Schema 校验快速发现缺失字段或格式问题。
+
+```bash
+python tools/validate_rules.py --rules rules/company.json --schema rules/company.schema.json
+```
 
 - **批量重排旧职位ID**：当历史导入导致 `job.id` 出现空洞或顺序错乱时，使用 `rebuild_job_ids.py` 可同时满足“全量修复”和“定向修复”两种场景。
 

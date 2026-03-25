@@ -1,142 +1,213 @@
 [
   {
-    "company_id": "C001",
-    "company_name": "Tencent",
-    "provider": "config",
-    "list_api": {
-      "url": "https://careers.tencent.com/tencentcareer/api/post/Query",
-      "default_params": {
-        "countryId": "",
-        "cityId": "",
-        "bgIds": "",
-        "productId": "",
-        "parentCategoryId": "",
-        "attrId": "1",
-        "keyword": "",
-        "pageIndex": 1,
-        "pageSize": 50,
-        "language": "zh-cn",
-        "area": "cn"
-      }
-    },
-    "detail_api": {
-      "url": "https://careers.tencent.com/tencentcareer/api/post/ByPostId",
-      "default_params": {
-        "language": "zh-cn"
-      }
-    },
-    "throttle": {
-      "min_seconds": 0.5,
-      "max_seconds": 1.0,
-      "max_retries": 3,
-      "retry_backoff": 2.0,
-      "timeout": 15
-    },
-    "extra": {
-      "list": {
-        "code_field": "Code",
-        "success_value": 200,
-        "data_path": "Data",
-        "posts_path": "Posts",
-        "count_path": "Count",
-        "post_id_field": "PostId",
-        "page_param": "pageIndex",
-        "size_param": "pageSize",
-        "page_size": 50,
-        "timestamp_param": "timestamp",
-        "category_param": "categoryId"
-      },
-      "detail": {
-        "code_field": "Code",
-        "success_value": 200,
-        "data_path": "Data",
-        "timestamp_param": "timestamp"
-      },
-      "field_map": {
-        "job_url": "PostURL",
-        "title": "RecruitPostName",
-        "publish_time": "LastUpdateTime",
-        "location": "LocationName",
-        "description": "Responsibility",
-        "requirement": "Requirement",
-        "bonus": "ImportantItem",
-        "work_experience": "RequireWorkYearsName"
-      },
-      "default_values": {
-        "salary": "面议",
-        "bonus": "NULL"
-      }
-    }
-  },
-  {
-    "_comment": "示例：复制此对象并修改即可快速接入新官网",
-    "company_id": "CXXX",
+    "_comment": "示例：复制此对象并修改即可快速接入新官网（演示配置，请勿删除或改动本示例）",
+    "company_id": "C002",
     "company_name": "示例公司",
-    "provider": "config",
-    "list_api": {
-      "url": "https://example.com/api/list",
-      "default_params": {
-        "countryId": "",
-        "cityId": "",
-        "categoryId": "",
-        "pageIndex": 1,
-        "pageSize": 20,
-        "language": "zh-cn",
-        "area": "cn"
-      }
-    },
     "detail_api": {
       "url": "https://example.com/api/detail",
       "default_params": {
         "language": "zh-cn"
       }
     },
-    "throttle": {
-      "min_seconds": 1,
-      "max_seconds": 2,
-      "max_retries": 5,
-      "retry_backoff": 1.5,
-      "timeout": 20
-    },
     "extra": {
+      "default_category_id": "CXXXDEFAULT",
+      "field_map": {
+        "bonus": "detail.bonus",
+        "description": "detail.description",
+        "education": "detail.education",
+        "job_url": "detail.url",
+        "location": "detail.city",
+        "publish_time": "detail.publish_time",
+        "requirement": "detail.requirement",
+        "salary": "detail.salary",
+        "title": "detail.title",
+        "work_experience": "detail.experience"
+      },
+      "default_values": {
+        "bonus": "NULL",
+        "salary": "面议"
+      },
       "list": {
+        "category_param": null,
         "code_field": "status.code",
-        "success_value": 0,
-        "data_path": "data",
-        "posts_path": "items",
         "count_path": "total",
-        "post_id_field": "id",
+        "data_path": "data",
         "page_param": "page",
-        "size_param": "pageSize",
         "page_size": 20,
-        "timestamp_param": null,
-        "category_param": null
+        "post_id_field": "id",
+        "posts_path": "items",
+        "size_param": "pageSize",
+        "success_value": 0,
+        "timestamp_param": null
       },
       "detail": {
         "code_field": "status.code",
-        "success_value": 0,
-        "data_path": "data"
-      },
-      "field_map": {
-        "job_url": "detail.url",
-        "title": "detail.title",
-        "publish_time": "detail.publish_time",
-        "location": "detail.city",
-        "description": "detail.description",
-        "requirement": "detail.requirement",
-        "bonus": "detail.bonus",
-        "work_experience": "detail.experience",
-        "salary": "detail.salary",
-        "education": "detail.education"
-      },
-      "default_values": {
-        "salary": "面议",
-        "bonus": "NULL"
+        "data_path": "data",
+        "success_value": 0
       },
       "headers": {
         "Authorization": "Bearer <token>"
+      }
+    },
+    "list_api": {
+      "url": "https://example.com/api/list",
+      "default_params": {
+        "area": "cn",
+        "categoryId": "",
+        "cityId": "",
+        "countryId": "",
+        "language": "zh-cn",
+        "pageIndex": 1,
+        "pageSize": 20
+      }
+    },
+    "provider": "config",
+    "throttle": {
+      "max_retries": 5,
+      "max_seconds": 2,
+      "min_seconds": 1,
+      "retry_backoff": 1.5,
+      "timeout": 20
+    }
+  },
+  {
+    "company_id": "C001",
+    "company_name": "Tencent",
+    "detail_api": {
+      "url": "https://careers.tencent.com/tencentcareer/api/post/ByPostId",
+      "default_params": {
+        "language": "zh-cn"
+      }
+    },
+    "extra": {
+      "field_map": {
+        "bonus": "ImportantItem",
+        "description": "Responsibility",
+        "job_url": "PostURL",
+        "location": "LocationName",
+        "publish_time": "LastUpdateTime",
+        "requirement": "Requirement",
+        "title": "RecruitPostName",
+        "work_experience": "RequireWorkYearsName"
       },
-      "default_category_id": "CXXXDEFAULT"
+      "default_values": {
+        "bonus": "NULL",
+        "salary": "面议"
+      },
+      "list": {
+        "category_param": "categoryId",
+        "code_field": "Code",
+        "count_path": "Count",
+        "data_path": "Data",
+        "page_param": "pageIndex",
+        "page_size": 50,
+        "post_id_field": "PostId",
+        "posts_path": "Posts",
+        "size_param": "pageSize",
+        "success_value": 200,
+        "timestamp_param": "timestamp"
+      },
+      "detail": {
+        "code_field": "Code",
+        "data_path": "Data",
+        "success_value": 200,
+        "timestamp_param": "timestamp"
+      }
+    },
+    "list_api": {
+      "url": "https://careers.tencent.com/tencentcareer/api/post/Query",
+      "default_params": {
+        "area": "cn",
+        "attrId": "1",
+        "bgIds": "",
+        "cityId": "",
+        "countryId": "",
+        "keyword": "",
+        "language": "zh-cn",
+        "pageIndex": 1,
+        "pageSize": 50,
+        "parentCategoryId": "",
+        "productId": ""
+      }
+    },
+    "provider": "config",
+    "throttle": {
+      "max_retries": 3,
+      "max_seconds": 1,
+      "min_seconds": 0.5,
+      "retry_backoff": 2,
+      "timeout": 15
+    }
+  },
+  {
+    "_comment": "示例：复制此对象并修改即可快速接入新官网（演示配置，请勿删除或改动本示例）",
+    "company_id": "CXXX",
+    "company_name": "示例公司",
+    "detail_api": {
+      "url": "https://example.com/api/detail",
+      "default_params": {
+        "language": "zh-cn"
+      }
+    },
+    "extra": {
+      "default_category_id": "CXXXDEFAULT",
+      "field_map": {
+        "bonus": "detail.bonus",
+        "description": "detail.description",
+        "education": "detail.education",
+        "job_url": "detail.url",
+        "location": "detail.city",
+        "publish_time": "detail.publish_time",
+        "requirement": "detail.requirement",
+        "salary": "detail.salary",
+        "title": "detail.title",
+        "work_experience": "detail.experience"
+      },
+      "default_values": {
+        "bonus": "NULL",
+        "salary": "面议"
+      },
+      "list": {
+        "category_param": null,
+        "code_field": "status.code",
+        "count_path": "total",
+        "data_path": "data",
+        "page_param": "page",
+        "page_size": 20,
+        "post_id_field": "id",
+        "posts_path": "items",
+        "size_param": "pageSize",
+        "success_value": 0,
+        "timestamp_param": null
+      },
+      "detail": {
+        "code_field": "status.code",
+        "data_path": "data",
+        "success_value": 0
+      },
+      "headers": {
+        "Authorization": "Bearer <token>"
+      }
+    },
+    "list_api": {
+      "url": "https://example.com/api/list",
+      "default_params": {
+        "area": "cn",
+        "categoryId": "",
+        "cityId": "",
+        "countryId": "",
+        "language": "zh-cn",
+        "pageIndex": 1,
+        "pageSize": 20
+      }
+    },
+    "provider": "config",
+    "throttle": {
+      "max_retries": 5,
+      "max_seconds": 2,
+      "min_seconds": 1,
+      "retry_backoff": 1.5,
+      "timeout": 20
     }
   }
 ]

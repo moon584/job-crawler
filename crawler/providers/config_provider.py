@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from copy import deepcopy
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from crawler.models import JobRecord
@@ -25,8 +25,6 @@ _TEXT_FIELDS = {
 
 REQUIRED_FIELDS = (
     "job_url",
-    "title",
-    "description",
 )
 
 
@@ -55,6 +53,7 @@ class ConfigDrivenProvider(BaseProvider):
         detail_cfg = self.extra.get("detail", {})
         self._list_headers = self.extra.get("list_headers") or self.extra.get("headers")
         self._detail_headers = self.extra.get("detail_headers") or self.extra.get("headers")
+        self.url_templates: Dict[str, str] = self.extra.get("url_templates", {})
         self.list_config = ResponseConfig(
             code_field=list_cfg.get("code_field", "Code"),
             success_value=list_cfg.get("success_value", 200),
@@ -114,7 +113,11 @@ class ConfigDrivenProvider(BaseProvider):
 
     # ---- 详情阶段 ----
     def build_detail_params(self, post_id: str) -> Dict[str, Any]:  # type: ignore[override]
-        params = super().build_detail_params(post_id)
+        params = dict(self.detail_endpoint.default_params)
+        post_id_key = self.detail_config.post_id_field or "postId"
+        params[post_id_key] = post_id
+        if post_id_key != "postId":
+            params.pop("postId", None)
         if self.detail_config.timestamp_param:
             params[self.detail_config.timestamp_param] = self._current_timestamp()
         return params
@@ -152,7 +155,7 @@ class ConfigDrivenProvider(BaseProvider):
             crawled_at=crawled_at,
             created_at=None,
         )
-        return record
+        return self._apply_templates(record, detail)
 
     # ---- 工具方法 ----
     @staticmethod
@@ -167,6 +170,14 @@ class ConfigDrivenProvider(BaseProvider):
         for key in parts:
             if isinstance(current, dict):
                 current = current.get(key)
+            elif isinstance(current, list):
+                try:
+                    index = int(key)
+                except ValueError:
+                    return None
+                if index < 0 or index >= len(current):
+                    return None
+                current = current[index]
             else:
                 return None
         return current
@@ -186,17 +197,48 @@ class ConfigDrivenProvider(BaseProvider):
     def _publish_time_field(self, detail: Dict[str, Any]) -> Optional[datetime]:
         raw_path = self.field_map.get("publish_time")
         raw_value = self._resolve_path(detail, raw_path) if raw_path else None
+        numeric_time = self._parse_epoch_time(raw_value)
+        if numeric_time is not None:
+            return numeric_time
         if raw_value is None:
             fallback = self.default_values.get("publish_time")
             return parse_publish_time(fallback) if fallback else None
         return parse_publish_time(str(raw_value))
 
-    def _infer_page_size(self) -> int:
-        default = self.list_endpoint.default_params.get(self.list_config.size_param or "pageSize")
+    @staticmethod
+    def _parse_epoch_time(value: Any) -> Optional[datetime]:
+        if isinstance(value, (int, float)):
+            numeric = float(value)
+        elif isinstance(value, str) and value.isdigit():
+            numeric = float(int(value))
+        else:
+            return None
+        if numeric > 10**12:
+            numeric /= 1000
+        if numeric <= 0:
+            return None
+        return datetime.utcfromtimestamp(numeric)
+
+    def _apply_templates(self, record: JobRecord, detail: Dict[str, Any]) -> JobRecord:
+        if not self.url_templates:
+            return record
+        job_url_template = self.url_templates.get("job_url")
+        if job_url_template:
+            rendered = self._render_template(job_url_template, detail)
+            if rendered:
+                record.job_url = rendered
+        return record
+
+    @staticmethod
+    def _render_template(template: str, context: Dict[str, Any]) -> Optional[str]:
+        class _SafeDict(dict):
+            def __missing__(self, key: str) -> str:  # type: ignore[override]
+                return ""
+
         try:
-            return int(default)
-        except (TypeError, ValueError):
-            return 50
+            return template.format_map(_SafeDict(context))
+        except Exception:
+            return None
 
     def _validate_required_fields(self) -> None:
         missing: List[str] = []

@@ -2,3 +2,6 @@ requests>=2.31.0
 PyMySQL>=1.1.0
 python-dotenv>=1.0.1
 pytest>=8.0.0
+jsonschema>=4.21.1
+textual>=0.74.0
+flask>=3.0.0

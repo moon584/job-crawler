@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>规则编辑器</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>规则编辑器</h1>
+      <div class="actions">
+        <button id="reload-btn">重新加载</button>
+        <button id="add-btn">新增规则</button>
+        <button id="delete-btn" class="danger">删除当前</button>
+        <button id="save-btn" class="primary">保存所有更改</button>
+      </div>
+      <div id="toast" class="toast hidden"></div>
+    </header>
+    <main>
+      <aside>
+        <input type="text" id="search" placeholder="搜索 company_id 或名称" />
+        <ul id="rule-list"></ul>
+      </aside>
+      <section id="editor">
+        <div class="field">
+          <label for="company-id">company_id</label>
+          <input id="company-id" type="text" />
+        </div>
+        <div class="field">
+          <label for="company-name">company_name</label>
+          <input id="company-name" type="text" />
+        </div>
+        <div class="field">
+          <label for="provider">provider</label>
+          <input id="provider" type="text" />
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="list-url">List API URL</label>
+            <input id="list-url" type="text" />
+          </div>
+          <div class="field">
+            <label for="detail-url">Detail API URL</label>
+            <input id="detail-url" type="text" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="default-category">default_category_id</label>
+          <input id="default-category" type="text" />
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="list-params">list_api.default_params (JSON)</label>
+            <textarea id="list-params" rows="5"></textarea>
+          </div>
+          <div class="field">
+            <label for="detail-params">detail_api.default_params (JSON)</label>
+            <textarea id="detail-params" rows="5"></textarea>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="field-map">extra.field_map (JSON)</label>
+            <textarea id="field-map" rows="8"></textarea>
+          </div>
+          <div class="field">
+            <label for="default-values">extra.default_values (JSON)</label>
+            <textarea id="default-values" rows="8"></textarea>
+          </div>
+        </div>
+        <div class="field">
+          <label for="extra-list">extra.list (JSON，可选)</label>
+          <textarea id="extra-list" rows="6"></textarea>
+        </div>
+        <div class="field">
+          <label for="extra-detail">extra.detail (JSON，可选)</label>
+          <textarea id="extra-detail" rows="6"></textarea>
+        </div>
+        <div class="field">
+          <label for="extra-headers">extra.headers (JSON，可选)</label>
+          <textarea id="extra-headers" rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label for="extra-list-headers">extra.list_headers (JSON，可选)</label>
+          <textarea id="extra-list-headers" rows="4"></textarea>
+        </div>
+        <div class="field">
+          <label for="extra-detail-headers">extra.detail_headers (JSON，可选)</label>
+          <textarea id="extra-detail-headers" rows="4"></textarea>
+        </div>
+        <div id="validation" class="validation"></div>
+      </section>
+    </main>
+    <script src="/static/app.js" type="module"></script>
+  </body>
+</html>
+

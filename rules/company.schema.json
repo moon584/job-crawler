@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/company-rules.json",
+  "title": "Job crawler company rule list",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["company_id", "provider", "list_api", "detail_api", "extra"],
+    "properties": {
+      "_comment": { "type": "string" },
+      "company_id": { "type": "string", "minLength": 1 },
+      "company_name": { "type": "string" },
+      "provider": { "type": "string", "minLength": 1 },
+      "list_api": {
+        "$ref": "#/definitions/apiEndpoint"
+      },
+      "detail_api": {
+        "$ref": "#/definitions/apiEndpoint"
+      },
+      "throttle": {
+        "type": "object",
+        "properties": {
+          "min_seconds": { "type": "number", "minimum": 0 },
+          "max_seconds": { "type": "number", "minimum": 0 },
+          "max_retries": { "type": "integer", "minimum": 0 },
+          "retry_backoff": { "type": "number", "minimum": 0 },
+          "timeout": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      },
+      "extra": {
+        "type": "object",
+        "required": ["list", "detail"],
+        "properties": {
+          "list": { "$ref": "#/definitions/responseConfig" },
+          "detail": { "$ref": "#/definitions/responseConfig" },
+          "field_map": {
+            "type": "object",
+            "additionalProperties": { "type": ["string", "null"] }
+          },
+          "default_values": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "headers": { "$ref": "#/definitions/headerMap" },
+          "list_headers": { "$ref": "#/definitions/headerMap" },
+          "detail_headers": { "$ref": "#/definitions/headerMap" },
+          "default_category_id": { "type": "string" },
+          "default_api_category_id": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "additionalProperties": true
+  },
+  "definitions": {
+    "apiEndpoint": {
+      "type": "object",
+      "required": ["url"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^https?://"
+        },
+        "default_params": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "responseConfig": {
+      "type": "object",
+      "properties": {
+        "code_field": { "type": ["string", "null"] },
+        "success_value": { "type": ["string", "number", "integer", "boolean", "null"] },
+        "data_path": { "type": ["string", "null"] },
+        "posts_path": { "type": ["string", "null"] },
+        "count_path": { "type": ["string", "null"] },
+        "post_id_field": { "type": ["string", "null"] },
+        "page_param": { "type": ["string", "null"] },
+        "size_param": { "type": ["string", "null"] },
+        "page_size": { "type": ["integer", "null"], "minimum": 1 },
+        "timestamp_param": { "type": ["string", "null"] },
+        "category_param": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "headerMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}
+

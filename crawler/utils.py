@@ -30,14 +30,15 @@ def parse_publish_time(raw_value: Optional[str]) -> Optional[datetime]:
 
 
 def normalize_category_id(raw_value: str) -> str:
-    """修正数据库中的 categoryid（某些导入会缺少 0），确保符合腾讯接口格式。"""
+    """兼容不同官网的分类ID，允许非 8 位数字，必要时补 0。"""
     if raw_value is None:
         raise ValueError("categoryid 不能为空")
     text = str(raw_value).strip()
     if not text:
         raise ValueError("categoryid 不能为空字符串")
-    if len(text) == 7:
+    digits_only = text.isdigit()
+    if digits_only and len(text) == 7:
         text = f"{text[:3]}0{text[3:]}"
-    if len(text) != 8 or not text.isdigit():
-        raise ValueError("categoryid 必须为 8 位数字")
-    return text
+    if digits_only:
+        return text
+    return text.upper()

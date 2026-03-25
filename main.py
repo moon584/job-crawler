@@ -87,7 +87,13 @@ def main() -> None:
     provider_name = args.provider or rule.provider
     provider = load_provider(provider_name, rule)
     job_type = prompt_job_type()
-    crawler = JobCrawler(database, http_client, provider, job_type=job_type, dry_run=args.dry_run)
+    crawler = JobCrawler(
+        database,
+        http_client,
+        provider,
+        job_type=job_type,
+        dry_run=args.dry_run,
+    )
     category_ids = prompt_category_ids()
     post_limit = prompt_post_limit()
     try:
@@ -95,10 +101,11 @@ def main() -> None:
         stats = crawler.run(target_categories=category_ids, post_limit=post_limit)
         duration = time.perf_counter() - start_time
         logging.info(
-            "本次爬取完成：共处理 %s 条岗位，其中成功 %s 条、失败 %s 条，耗时 %.2f 秒",
+            "本次爬取完成：共处理 %s 条岗位，其中成功 %s 条、失败 %s 条，跳过 %s 条，耗时 %.2f 秒",
             stats.total_posts,
             stats.success,
             stats.failed,
+            stats.skipped_existing,
             duration,
         )
     except Exception:

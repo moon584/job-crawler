@@ -11,6 +11,8 @@ class CategoryMapping:
 
     db_category_id: str
     api_category_id: Optional[str]
+    crawled_job_count: int = 0
+    official_job_count: int = 0
 
 
 @dataclass(slots=True)
@@ -67,6 +69,7 @@ class CrawlStats:
     list_failures: int = 0
     detail_failures: int = 0
     per_category: Dict[str, int] = field(default_factory=dict)
+    skipped_existing: int = 0
 
     def record_category(self, category_id: str, count: int) -> None:
         self.per_category[category_id] = self.per_category.get(category_id, 0) + count
@@ -84,3 +87,6 @@ class CrawlStats:
 
     def record_detail_failure(self) -> None:
         self.detail_failures += 1
+
+    def record_skip_existing(self) -> None:
+        self.skipped_existing += 1

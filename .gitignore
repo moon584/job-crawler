@@ -27,4 +27,4 @@ htmlcov/
 *.tmp
 .DS_Store
 Thumbs.db
-
+backups/

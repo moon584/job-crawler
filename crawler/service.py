@@ -43,6 +43,9 @@ class JobCrawler:
             logging.warning("指定的分类未找到或没有可爬取的叶子节点")
             return stats
         for mapping in category_mappings:
+            if self._should_skip_category(mapping):
+                stats.record_category(mapping.db_category_id, 0)
+                continue
             api_category_id = mapping.api_category_id or ""
             logging.info(
                 "开始抓取分类 %s（接口ID=%s，条数限制=%s）",
@@ -50,27 +53,34 @@ class JobCrawler:
                 mapping.api_category_id or "-",
                 post_limit or "all",
             )
-            posts = self._fetch_posts(api_category_id, post_limit)
-            stats.record_category(mapping.db_category_id, len(posts))
-            for post in posts:
-                post_id = self._provider.extract_post_id(post)
-                if not post_id:
-                    stats.record_failure()
-                    logging.warning("跳过缺少PostId的岗位：%s", post)
-                    continue
-                try:
-                    detail = self._fetch_detail(post_id)
-                    record = self._build_job_record(mapping.db_category_id, detail)
-                    self._persist_record(record)
-                    stats.record_success()
-                except Exception:
-                    stats.record_failure()
-                    logging.exception("抓取岗位 %s 失败", post_id)
+            official_total: Optional[int] = None
+            try:
+                posts = self._fetch_posts(api_category_id, post_limit)
+                official_total = len(posts)
+                self._handle_category_gap(mapping.db_category_id, official_total)
+                stats.record_category(mapping.db_category_id, official_total)
+                for post in posts:
+                    post_id = self._provider.extract_post_id(post)
+                    if not post_id:
+                        stats.record_failure()
+                        logging.warning("跳过缺少PostId的岗位：%s", post)
+                        continue
+                    try:
+                        detail = self._fetch_detail(post_id)
+                        record = self._build_job_record(mapping.db_category_id, detail)
+                        self._persist_record(record)
+                        stats.record_success()
+                    except Exception:
+                        stats.record_failure()
+                        logging.exception("抓取岗位 %s 失败", post_id)
+            finally:
+                self._refresh_category_counts(mapping.db_category_id, official_total)
         logging.info(
-            "分类抓取完成：共处理%s条，成功%s条，失败%s条",
+            "分类抓取完成：共处理%s条，成功%s条，失败%s条，跳过%s条",
             stats.total_posts,
             stats.success,
             stats.failed,
+            stats.skipped_existing,
         )
         logging.info("各分类抓取数量：%s", stats.per_category)
         logging.info(
@@ -143,19 +153,16 @@ class JobCrawler:
         api_id: Optional[str]
         if isinstance(api_candidate, str) and api_candidate:
             normalized_candidate = api_candidate.strip()
-            if normalized_candidate.isdigit():
-                try:
-                    api_id = normalize_category_id(normalized_candidate)
-                except ValueError as exc:
-                    logging.error(
-                        "公司 %s 的 default_api_category_id='%s' 非法：%s",
-                        self._provider.company_id,
-                        api_candidate,
-                        exc,
-                    )
-                    return None
-            else:
-                api_id = normalized_candidate
+            try:
+                api_id = normalize_category_id(normalized_candidate)
+            except ValueError as exc:
+                logging.error(
+                    "公司 %s 的 default_api_category_id='%s' 非法：%s",
+                    self._provider.company_id,
+                    api_candidate,
+                    exc,
+                )
+                return None
         elif db_category_id is not None:
             logging.warning(
                 "公司 %s 未配置 default_api_category_id，无法为缺失的分类 %s 使用默认 API 分类",
@@ -165,7 +172,12 @@ class JobCrawler:
             return None
         else:
             api_id = None
-        return CategoryMapping(db_category_id=db_id_source, api_category_id=api_id)
+        return CategoryMapping(
+            db_category_id=db_id_source,
+            api_category_id=api_id,
+            crawled_job_count=0,
+            official_job_count=-1,
+        )
 
     def _fetch_posts(self, category_id: str, post_limit: Optional[int]) -> List[Dict[str, object]]:
         posts: List[Dict[str, object]] = []
@@ -270,3 +282,71 @@ class JobCrawler:
             changes["crawl_status"] = record.crawl_status
             changes["crawled_at"] = record.crawled_at
         return changes
+
+    def _should_skip_category(self, mapping: CategoryMapping) -> bool:
+        crawled = mapping.crawled_job_count
+        official = mapping.official_job_count
+        if official >= 0 and crawled == official:
+            logging.info(
+                "分类 %s 的岗位数量已与官网一致（%s 条），跳过本轮抓取。",
+                mapping.db_category_id,
+                official,
+            )
+            return True
+        if official >= 0:
+            logging.info(
+                "分类 %s 数量不一致：已爬 %s 条，官网 %s 条，继续抓取。",
+                mapping.db_category_id,
+                crawled,
+                official,
+            )
+        else:
+            logging.info(
+                "分类 %s 未配置官网数量，默认执行抓取。",
+                mapping.db_category_id,
+            )
+        return False
+
+    def _refresh_category_counts(self, category_id: str, official_total: Optional[int] = None) -> None:
+        if self._dry_run:
+            logging.debug("[DRY-RUN] 不更新分类 %s 的岗位数量统计", category_id)
+            return
+        try:
+            crawled_total = self._db.sync_category_counts(category_id, official_total)
+        except Exception:
+            logging.exception("刷新分类 %s 的岗位数量失败", category_id)
+            return
+        if official_total is None:
+            logging.info("分类 %s 的爬取职位数量更新为 %s（官网总数保持不变）", category_id, crawled_total)
+        else:
+            logging.info(
+                "分类 %s 的岗位数量已更新完成：官网=%s，已录入=%s",
+                category_id,
+                official_total,
+                crawled_total,
+            )
+
+    def _handle_category_gap(self, category_id: str, official_total: int) -> None:
+        """当数据库记录多于本次抓取条数时，清理旧数据以保证一致。"""
+        if self._dry_run:
+            logging.debug("[DRY-RUN] 假定分类 %s 的旧数据无需清理", category_id)
+            return
+        try:
+            existing_total = self._db.count_jobs_in_category(category_id)
+        except Exception:
+            logging.exception("统计分类 %s 的职位数量失败，跳过自动清理", category_id)
+            return
+        if existing_total <= official_total:
+            return
+        logging.warning(
+            "分类 %s 已存职位 %s 条，多于本次抓取的 %s 条，将删除旧数据并重新写入。",
+            category_id,
+            existing_total,
+            official_total,
+        )
+        try:
+            deleted = self._db.delete_jobs_by_category(category_id)
+        except Exception:
+            logging.exception("删除分类 %s 的旧职位失败", category_id)
+            raise
+        logging.info("分类 %s 旧职位清理完成，删除 %s 条。", category_id, deleted)

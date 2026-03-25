@@ -40,10 +40,9 @@ def test_normalize_category_id_keeps_valid_value() -> None:
     assert normalize_category_id("40001001") == "40001001"
 
 
-def test_normalize_category_id_invalid_length() -> None:
-    try:
-        normalize_category_id("123")
-    except ValueError as exc:
-        assert "8 位" in str(exc)
-    else:
-        raise AssertionError("normalize_category_id should reject invalid length")
+def test_normalize_category_id_accepts_short_numeric() -> None:
+    assert normalize_category_id("123456") == "123456"
+
+
+def test_normalize_category_id_uppercases_text() -> None:
+    assert normalize_category_id("c001a01") == "C001A01"

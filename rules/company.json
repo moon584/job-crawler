@@ -44,6 +44,92 @@
         "timestamp_param": "timestamp"
       }
     },
+    "job_type_overrides": {
+      "1": {
+        "list_api": {
+          "url": "https://join.qq.com/api/v1/post/pageList?timestamp={timestamp}",
+          "method": "POST",
+          "default_params": {
+            "pageIndex": 1,
+            "pageSize": 20,
+            "types": "1",
+            "projectId": "",
+            "bgId": "",
+            "title": "",
+            "countryId": "",
+            "cityId": "",
+            "jobCategoryId": "",
+            "recruitType": "1"
+          }
+        },
+        "detail_api": {
+          "url": "https://join.qq.com/api/v1/post/detail?timestamp={timestamp}&postId={PostId}",
+          "method": "GET"
+        },
+        "extra": {
+          "crawl_mode": "slow",
+          "auto_category_mode": true,
+          "default_api_category_id": "QQ_CAMPUS_ALL",
+          "default_category_id": "C001DEFAULT",
+          "list": {
+            "posts_path": "data.list",
+            "count_path": "data.total",
+            "post_id_field": "postId",
+            "code_field": "status",
+            "success_value": 0,
+            "page_param": "pageIndex",
+            "size_param": "pageSize",
+            "data_path": "data",
+            "category_param": "jobCategoryId"
+          },
+          "detail": {
+            "data_path": "data",
+            "code_field": "status",
+            "success_value": 0
+          },
+          "category_rules": [
+            {"category_id": "C001A01B01", "match": {"position": 75}},
+            {"category_id": "C001A01B03", "match": {"position": 76}},
+            {"category_id": "C001A01B04", "match": {"position": 77}},
+            {"category_id": "C001A01B02", "match": {"position": 84}},
+            {"category_id": "C001A01B05", "match": {"position": 93}},
+            {"category_id": "C001A01B07", "match": {"position": 231}},
+            {"category_id": "C001A01B08", "match": {"position": 250}},
+
+            {"category_id": "C001A03B01", "match": {"position": 79}},
+            {"category_id": "C001A03B01", "match": {"position": 94}},
+            {"category_id": "C001A03B02", "match": {"position": 80}},
+            {"category_id": "C001A03B03", "match": {"position": 253}},
+            {"category_id": "C001A03B04", "match": {"position": 219}},
+            {"category_id": "C001A03B05", "match": {"position": 83}},
+
+            {"category_id": "C001A02B02", "match": {"position": 85}},
+            {"category_id": "C001A02B03", "match": {"position": 89}},
+
+            {"category_id": "C001A12B01", "match": {"position": 78}},
+            {"category_id": "C001A12B02", "match": {"position": 82}},
+            {"category_id": "C001A12B03", "match": {"position": 96}},
+            {"category_id": "C001A12B04", "match": {"position": 192}},
+
+            {"category_id": "C001A13B01", "match": {"position": 326}},
+            {"category_id": "C001A13B02", "match": {"position": 327}},
+            {"category_id": "C001A13B03", "match": {"position": 328}},
+            {"category_id": "C001A13B04", "match": {"position": 329}}
+          ],
+          "field_map": {
+            "title": "title",
+            "location": "workCityList",
+            "requirement": "request",
+            "description": "desc",
+            "bonus": "graduateBonus",
+            "job_url": "PostURL"
+          },
+          "url_templates": {
+            "job_url": "https://join.qq.com/post_detail.html?postid={postId}"
+          }
+        }
+      }
+    },
     "list_api": {
       "url": "https://careers.tencent.com/tencentcareer/api/post/Query",
       "default_params": {

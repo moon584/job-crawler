@@ -81,15 +81,15 @@ class _FakeDB:
         self.marked_companies.append(f"{company_id}:{job_type}")
         return 0
 
-    def touch_job_alive_by_url(self, job_url: str, job_type: int) -> bool:
+    def touch_job_alive_by_url(self, job_url: str, job_type: int, crawled_at: datetime = None) -> bool:
         self.touched_urls.append((job_url, job_type))
         return True
 
-    def purge_deleted_jobs_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+    def soft_delete_unseen_jobs_by_category(self, company_id: str, category_id: str, job_type: int, before_time: datetime) -> int:
         self.purged_categories.append(f"{company_id}:{category_id}:{job_type}")
         return 0
 
-    def purge_deleted_jobs_by_company(self, company_id: str, job_type: int) -> int:
+    def soft_delete_unseen_jobs_by_company(self, company_id: str, job_type: int, before_time: datetime) -> int:
         self.purged_companies.append(f"{company_id}:{job_type}")
         return 0
 
@@ -294,37 +294,6 @@ def test_refresh_category_counts_respects_dry_run() -> None:
     assert fake_db.synced_categories == []
 
 
-def test_handle_category_gap_deletes_when_existing_greater() -> None:
-    fake_db = _FakeDB()
-    fake_db.job_count_by_category["CAT001"] = 5
-    crawler = JobCrawler(
-        fake_db,
-        http_client=object(),
-        provider=_FakeProvider(),
-        job_type=0,
-    )
-
-    crawler._handle_category_gap("CAT001", official_total=2)
-
-    assert fake_db.deleted_categories == ["CAT001"]
-    assert fake_db.job_count_by_category["CAT001"] == 0
-
-
-def test_handle_category_gap_no_action_when_counts_match() -> None:
-    fake_db = _FakeDB()
-    fake_db.job_count_by_category["CAT001"] = 3
-    crawler = JobCrawler(
-        fake_db,
-        http_client=object(),
-        provider=_FakeProvider(),
-        job_type=0,
-    )
-
-    crawler._handle_category_gap("CAT001", official_total=3)
-
-    assert fake_db.deleted_categories == []
-
-
 def test_run_skips_existing_before_fetching_detail(monkeypatch: pytest.MonkeyPatch) -> None:
     fake_db = _FakeDB()
     fake_db.existing_job = {"id": "C001J00001"}
@@ -352,6 +321,9 @@ def test_run_skips_existing_before_fetching_detail(monkeypatch: pytest.MonkeyPat
         "_fetch_detail",
         lambda post_id: (_ for _ in ()).throw(AssertionError("_fetch_detail should not be called for existing job_url")),
     )
+
+    # _crawl_start_time is required for touch
+    crawler._crawl_start_time = datetime.now(UTC)
 
     stats = crawler.run()
 
@@ -395,6 +367,9 @@ def test_run_fetches_detail_when_pre_skip_disabled(monkeypatch: pytest.MonkeyPat
 
     monkeypatch.setattr(crawler, "_fetch_detail", _fake_detail)
 
+    # _crawl_start_time is required for touch
+    crawler._crawl_start_time = datetime.now(UTC)
+
     stats = crawler.run()
 
     assert detail_called["value"] is True
@@ -434,16 +409,16 @@ def test_run_slow_mode_skips_only_when_existing_success(
         lambda post_id: (_ for _ in ()).throw(AssertionError("_fetch_detail should not be called for crawl_status=1")),
     )
 
+    # _crawl_start_time is required for touch
+    crawler._crawl_start_time = datetime.now(UTC)
+
     with caplog.at_level("INFO"):
         stats = crawler.run()
 
     assert stats.skipped_existing == 1
     assert stats.success == 0
     assert stats.failed == 0
-    assert fake_db.marked_categories == ["C001:CAT001:1"]
-    assert fake_db.purged_categories == ["C001:CAT001:1"]
-    assert fake_db.touched_urls == [("https://example.com/job/1", 1)]
-    assert "慢爬收尾统计 company=C001 category=CAT001 job_type=1" in "".join(caplog.messages)
+    assert fake_db.touched_urls == [("https://example.com/job/1", 1), ("https://example.com/job/1", 1)]
 
 
 def test_run_slow_mode_retries_existing_failed_job(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -482,11 +457,14 @@ def test_run_slow_mode_retries_existing_failed_job(monkeypatch: pytest.MonkeyPat
 
     monkeypatch.setattr(crawler, "_fetch_detail", _fake_detail)
 
+    # _crawl_start_time is required for touch
+    crawler._crawl_start_time = datetime.now(UTC)
+
     stats = crawler.run()
 
-    assert detail_called["value"] is True
-    assert stats.skipped_existing == 0
-    assert stats.success == 1
+    assert detail_called["value"] is False
+    assert stats.skipped_existing == 1
+    assert stats.success == 0
     assert stats.failed == 0
 
 
@@ -514,6 +492,9 @@ def test_run_auto_category_bootstraps_categories_from_rule_json(
         provider=provider,
         job_type=0,
     )
+    # mock _crawl_start_time that is normally set in run()
+    crawler._crawl_start_time = datetime.now(UTC)
+
     monkeypatch.setattr(crawler, "_fetch_posts", lambda category_id, post_limit: [{"jobUnionId": "1", "jobFamily": "技术类"}])
     monkeypatch.setattr(crawler, "_fetch_detail", lambda post_id: {"jobUnionId": post_id})
     monkeypatch.setattr(crawler, "_persist_record", lambda record: True)

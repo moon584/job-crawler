@@ -167,6 +167,8 @@ python tools/rules_frontend_server.py --host 127.0.0.1 --port 8000
 
 > 📌 **美团（company_id = C007）接入说明**：默认以 `auto_category_mode` 拉取全量岗位，并根据 `jobFamily`/`jobFamilyGroup` 自动分类。你只需在数据库 `category` 表补齐 `C007DEFAULT` 及 `category_rules` 中列出的 `category_id`，后续若要拓展分类，新增规则即可，无需再改代码。
 
+> 📌 **腾讯校招（company_id = C001, job_type = 1）接入说明**：利用 `job_type_overrides` 配置特性，同一公司不同招聘类型可分别使用不同 API 与分类映射。腾讯校招启用了自动分类 (`auto_category_mode=true`)，基于返回的 `projectId` 分流。数据库需预先写入对应类目。
+
 - **规则校验**：修改 `rules/company.json` 后，建议先通过 Schema 校验快速发现缺失字段或格式问题。
 
 ```bash

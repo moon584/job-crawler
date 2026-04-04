@@ -32,3 +32,4 @@ backups/
 
 # Claude / AI Assistants
 .claude/
+*experience*.md

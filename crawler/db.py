@@ -239,31 +239,13 @@ class Database:
         return int(row["total"] or 0)
 
     def mark_jobs_deleted_by_category_count(self, category_id: str) -> int:
-        """直接把某分类下所有岗位软删（由于增量更新，常用于 fast 模式刷新某分类）"""
-        with self.cursor() as cur:
-            cur.execute("UPDATE job SET is_deleted=1 WHERE category_id=%s", (category_id,))
-            affected = cur.rowcount or 0
-        return affected
+        pass  # Deprecated
 
     def mark_jobs_deleted_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
-        """慢爬准备阶段：按 company+category+job_type 标记待删除（is_deleted=1）。"""
-        with self.cursor() as cur:
-            cur.execute(
-                "UPDATE job SET is_deleted=1 WHERE company_id=%s AND category_id=%s AND job_type=%s",
-                (company_id, category_id, job_type),
-            )
-            affected = cur.rowcount or 0
-        return affected
+        pass  # Deprecated
 
     def mark_jobs_deleted_by_company(self, company_id: str, job_type: int) -> int:
-        """慢爬自动分类准备阶段：先将公司+job_type 下职位标记为待删除（is_deleted=1）。"""
-        with self.cursor() as cur:
-            cur.execute(
-                "UPDATE job SET is_deleted=1 WHERE company_id=%s AND job_type=%s",
-                (company_id, job_type),
-            )
-            affected = cur.rowcount or 0
-        return affected
+        pass  # Deprecated
 
     def touch_job_alive_by_url(self, job_url: str, job_type: int, crawled_at: datetime) -> bool:
         """命中列表中的岗位即视为本次已抓到，取消待删除标记（is_deleted=0）并更新时间。"""
@@ -276,7 +258,7 @@ class Database:
         return affected > 0
 
     def soft_delete_unseen_jobs_by_category(self, company_id: str, category_id: str, job_type: int, before_time: datetime) -> int:
-        """慢爬收尾：按 company+category+job_type 将 crawled_at 早于本次爬虫开始时间的记录软删（is_deleted=1）。"""
+        """收尾：按 company+category+job_type 将 crawled_at 早于本次爬虫开始时间的记录软删（is_deleted=1）。"""
         with self.cursor() as cur:
             cur.execute(
                 "UPDATE job SET is_deleted=1 WHERE company_id=%s AND category_id=%s AND job_type=%s AND crawled_at < %s",
@@ -286,7 +268,7 @@ class Database:
         return affected
 
     def soft_delete_unseen_jobs_by_company(self, company_id: str, job_type: int, before_time: datetime) -> int:
-        """慢爬收尾：将整个公司+job_type 下 crawled_at 早于本次爬虫开始时间的记录软删（is_deleted=1）。"""
+        """收尾：将整个公司+job_type 下 crawled_at 早于本次爬虫开始时间的记录软删（is_deleted=1）。"""
         with self.cursor() as cur:
             cur.execute(
                 "UPDATE job SET is_deleted=1 WHERE company_id=%s AND job_type=%s AND crawled_at < %s",
@@ -296,29 +278,18 @@ class Database:
         return affected
 
     def clear_deleted_marks_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
-        """慢爬异常回滚：按 company+category+job_type 撤销待删除标记。"""
-        with self.cursor() as cur:
-            cur.execute(
-                "UPDATE job SET is_deleted=0 WHERE company_id=%s AND category_id=%s AND job_type=%s AND is_deleted=1",
-                (company_id, category_id, job_type),
-            )
-            affected = cur.rowcount or 0
-        return affected
+        pass  # Deprecated
 
     def clear_deleted_marks_by_company(self, company_id: str, job_type: int) -> int:
-        """慢爬异常回滚：恢复公司+job_type 下标记位，避免中断后状态残留。"""
-        with self.cursor() as cur:
-            cur.execute(
-                "UPDATE job SET is_deleted=0 WHERE company_id=%s AND job_type=%s AND is_deleted=1",
-                (company_id, job_type),
-            )
-            affected = cur.rowcount or 0
-        return affected
+        pass  # Deprecated
 
     def sync_category_counts(self, category_id: str, official_total: Optional[int] = None) -> int:
-        """同步分类的爬取/官网职位数量，返回最新 crawled 数量。"""
-        crawled_total = self.count_jobs_in_category(category_id)
+        """同步分类的爬取/官网职位数量（只统计存活岗位 is_deleted=0），返回最新 crawled 数量。"""
         with self.cursor() as cur:
+            cur.execute("SELECT COUNT(*) AS total FROM job WHERE category_id=%s AND is_deleted=0", (category_id,))
+            row = cur.fetchone() or {"total": 0}
+            crawled_total = int(row["total"] or 0)
+
             if official_total is None:
                 cur.execute(
                     "UPDATE category SET crawled_job_count=%s WHERE id=%s",

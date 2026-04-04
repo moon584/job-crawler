@@ -27,7 +27,7 @@ class JobCrawler:
         provider: BaseProvider,
         job_type: int,
         *,
-        crawl_mode: str = "fast",
+        crawl_mode: str = "fast",  # Deprecated parameter, kept for compatibility
         dry_run: bool = False,
         max_workers: int = 5,
     ) -> None:
@@ -35,14 +35,9 @@ class JobCrawler:
         self._http = http_client
         self._provider = provider
         self._job_type = job_type
-        # 注入 job_type 到 provider，供其根据情况生成不同参数
         if hasattr(self._provider, "set_job_type"):
             self._provider.set_job_type(self._job_type)
         self._max_workers = max_workers
-        normalized_mode = str(crawl_mode).strip().lower()
-        if normalized_mode not in {"fast", "slow"}:
-            raise ValueError(f"Unsupported crawl_mode: {crawl_mode}")
-        self._crawl_mode = normalized_mode
         self._dry_run = dry_run
         extra_cfg = getattr(provider, "extra", {}) or {}
         raw_skip = extra_cfg.get("skip_detail_if_exists") if isinstance(extra_cfg, dict) else None
@@ -52,10 +47,6 @@ class JobCrawler:
         self._quit_requested = False
         self._quit_listener_thread: Optional[threading.Thread] = None
         self._quit_listener_shutdown = threading.Event()
-
-    @property
-    def _is_slow_mode(self) -> bool:
-        return self._crawl_mode == "slow"
 
     def _process_single_post(
         self,
@@ -70,8 +61,7 @@ class JobCrawler:
 
         existing_job_url = self._find_existing_job_url_by_post(post)
         if existing_job_url:
-            if self._is_slow_mode:
-                self._touch_existing_job(existing_job_url)
+            self._touch_existing_job(existing_job_url)
             stats.record_skip_existing()
             return
         post_id = self._provider.extract_post_id(post)
@@ -87,8 +77,7 @@ class JobCrawler:
             if inserted:
                 stats.record_success()
             else:
-                if self._is_slow_mode:
-                    self._touch_existing_job(record.job_url)
+                self._touch_existing_job(record.job_url)
                 stats.record_skip_existing()
         except Exception:
             stats.record_failure()
@@ -100,7 +89,7 @@ class JobCrawler:
         target_categories: Optional[List[str]] = None,
         post_limit: Optional[int] = None,
     ) -> CrawlStats:
-        """执行爬取，支持指定分类和条数限制（中文注释）。"""
+        """执行统一爬取模式（基于心跳刷新机制）。"""
         self._start_quit_listener()
         self._crawl_start_time = datetime.now(timezone.utc).replace(tzinfo=None)
         try:
@@ -118,9 +107,6 @@ class JobCrawler:
                 list_failed = False
                 if self._check_quit_requested():
                     break
-                if not self._is_slow_mode and self._should_skip_category(mapping):
-                    stats.record_category(mapping.db_category_id, 0)
-                    continue
                 api_category_id = mapping.api_category_id or ""
                 logging.info(
                     "开始抓取分类 %s（接口ID=%s，条数限制=%s）",
@@ -134,8 +120,6 @@ class JobCrawler:
                     posts = self._fetch_posts(api_category_id, post_limit)
                     list_failed = stats.list_failures > previous_list_failures
                     official_total = len(posts)
-                    if not self._is_slow_mode:
-                        self._handle_category_gap(mapping.db_category_id, official_total)
                     stats.record_category(mapping.db_category_id, official_total)
 
                     with concurrent.futures.ThreadPoolExecutor(max_workers=self._max_workers) as executor:
@@ -152,8 +136,7 @@ class JobCrawler:
                             except Exception:
                                 logging.exception("任务执行过程中发生未捕获异常")
                 finally:
-                    if self._is_slow_mode:
-                        self._finalize_slow_category(mapping.db_category_id, list_failed, post_limit)
+                    self._finalize_category(mapping.db_category_id, list_failed, post_limit)
                     self._refresh_category_counts(mapping.db_category_id, official_total)
             logging.info(
                 "分类抓取完成：共处理%s条，成功%s条，失败%s条，跳过%s条",
@@ -189,8 +172,7 @@ class JobCrawler:
 
         existing_job_url = self._find_existing_job_url_by_post(post)
         if existing_job_url:
-            if self._is_slow_mode:
-                self._touch_existing_job(existing_job_url)
+            self._touch_existing_job(existing_job_url)
             stats.record_skip_existing()
             return
         post_id = self._provider.extract_post_id(post)
@@ -233,8 +215,7 @@ class JobCrawler:
                 stats.record_category(target_category, 1)
                 stats.record_success()
             else:
-                if self._is_slow_mode:
-                    self._touch_existing_job(record.job_url)
+                self._touch_existing_job(record.job_url)
                 stats.record_skip_existing()
         except Exception:
             stats.record_failure()
@@ -305,16 +286,10 @@ class JobCrawler:
                 except Exception:
                     logging.exception("任务执行过程中发生未捕获异常")
 
-        if self._is_slow_mode:
-            self._finalize_slow_company(list_failed, post_limit)
-            for category_id in known_category_ids:
-                self._refresh_category_counts(category_id, official_total=None)
-        else:
-            for category_id, total in category_totals.items():
-                try:
-                    self._handle_category_gap(category_id, official_total=total)
-                finally:
-                    self._refresh_category_counts(category_id, official_total=total)
+        self._finalize_company(list_failed, post_limit)
+        for category_id in known_category_ids:
+            # Refresh counts for all known categories (or only those affected)
+            self._refresh_category_counts(category_id, official_total=category_totals.get(category_id))
         logging.info(
             "自动分类模式完成：共处理 %s 条岗位，成功 %s 条，失败 %s 条",
             stats.total_posts,
@@ -565,12 +540,9 @@ class JobCrawler:
         logging.info("列表命中已存在职位，详情前跳过：%s", job_url)
         return job_url
 
-    def _prepare_slow_category(self, category_id: str) -> None:
-        pass
-
-    def _finalize_slow_category(self, category_id: str, list_failed: bool, post_limit: Optional[int]) -> None:
+    def _finalize_category(self, category_id: str, list_failed: bool, post_limit: Optional[int]) -> None:
         if self._dry_run:
-            logging.info("[DRY-RUN] 慢爬收尾跳过分类 %s 的删除统计阶段", category_id)
+            logging.info("[DRY-RUN] 收尾跳过分类 %s 的下架软删阶段", category_id)
             return
         if list_failed:
             logging.warning("分类 %s (job_type=%s) 列表请求异常，不执行下架数据软删", category_id, self._job_type)
@@ -586,12 +558,9 @@ class JobCrawler:
             logging.info("【注意】分类 %s (job_type=%s) 已将 %s 条下架职位标记为待删除。如需彻底删除，请运行清理脚本。", category_id, self._job_type, affected)
 
 
-    def _prepare_slow_company(self) -> None:
-        pass
-
-    def _finalize_slow_company(self, list_failed: bool, post_limit: Optional[int]) -> None:
+    def _finalize_company(self, list_failed: bool, post_limit: Optional[int]) -> None:
         if self._dry_run:
-            logging.info("[DRY-RUN] 慢爬收尾跳过公司 %s 的删除阶段", self._provider.company_id)
+            logging.info("[DRY-RUN] 收尾跳过公司 %s 的下架软删阶段", self._provider.company_id)
             return
         if list_failed:
             logging.warning(
@@ -803,26 +772,4 @@ class JobCrawler:
             )
 
     def _handle_category_gap(self, category_id: str, official_total: int) -> None:
-        """当数据库记录多于本次抓取条数时，仅将该分类下所有岗位软删 (is_deleted=1)。由于抓取到的岗位会自己复活，这能保证下架岗位变灰。"""
-        if self._dry_run:
-            logging.debug("[DRY-RUN] 假定分类 %s 的旧数据需要软删除", category_id)
-            return
-        try:
-            existing_total = self._db.count_jobs_in_category(category_id)
-        except Exception:
-            logging.exception("统计分类 %s 的职位数量失败，跳过自动软删标记", category_id)
-            return
-        if existing_total <= official_total:
-            return
-        logging.warning(
-            "分类 %s 已存职位 %s 条，多于官网的 %s 条，将先将其所有数据标记为待删除(后续命中的会自动复活)。",
-            category_id,
-            existing_total,
-            official_total,
-        )
-        try:
-            affected = self._db.mark_jobs_deleted_by_category_count(category_id)
-        except Exception:
-            logging.exception("软删分类 %s 旧职位失败", category_id)
-            raise
-        logging.info("分类 %s 旧数据已标记待删除，共 %s 条。", category_id, affected)
+        pass  # Deprecated

@@ -17,12 +17,21 @@ class ListResult:
     has_more: bool
 
 
+class AuthError(Exception):
+    """当接口返回未授权、Token/Cookie 过期时抛出的异常。"""
+    pass
+
 class BaseProvider:
     """官网适配器基类，子类只需关心字段映射和接口差异。"""
 
-    def __init__(self, rule: CompanyRule) -> None:
+    def __init__(self, rule: CompanyRule, http_client=None) -> None:
         self.rule = rule
         self.extra = rule.extra
+        self.http_client = http_client
+        self.job_type = 0  # 默认 0
+
+    def set_job_type(self, job_type: int) -> None:
+        self.job_type = job_type
 
     @property
     def company_id(self) -> str:
@@ -51,6 +60,28 @@ class BaseProvider:
         return None
 
     # ---- 列表阶段 ----
+    def fetch_posts(self, category_id: str, page: int) -> ListResult:
+        """发送请求获取职位列表数据（支持被不同类型爬虫重写）"""
+        payload = self.build_list_params(category_id, page)
+        try:
+            response = self.http_client.fetch_json(
+                self.list_endpoint,
+                payload,
+                headers=self.list_headers(),
+            )
+            return self.parse_list_response(response, page)
+        except AuthError:
+            if self.refresh_auth():
+                # 重新刷新了认证，重试一次
+                response = self.http_client.fetch_json(
+                    self.list_endpoint,
+                    payload,
+                    headers=self.list_headers(),
+                )
+                return self.parse_list_response(response, page)
+            else:
+                raise
+
     def build_list_params(self, category_id: str, page: int) -> Dict[str, Any]:
         """构造列表接口参数，默认直接沿用 rule 中的默认值。"""
 
@@ -76,6 +107,34 @@ class BaseProvider:
         return None
 
     # ---- 详情阶段 ----
+    def fetch_detail(self, post_id: str) -> Dict[str, Any]:
+        """发送请求获取职位详细数据（支持被不同类型爬虫重写）"""
+        payload = self.build_detail_params(post_id)
+        try:
+            response = self.http_client.fetch_json(
+                self.detail_endpoint,
+                payload,
+                headers=self.detail_headers(),
+            )
+            return self.parse_detail_response(response)
+        except AuthError:
+            if self.refresh_auth():
+                response = self.http_client.fetch_json(
+                    self.detail_endpoint,
+                    payload,
+                    headers=self.detail_headers(),
+                )
+                return self.parse_detail_response(response)
+            else:
+                raise
+
+    def refresh_auth(self) -> bool:
+        """当捕获到 AuthError 时调用，用于自动重新获取 Cookie 或 Token。
+        返回 True 表示刷新成功，可以重试请求；返回 False 则向上抛出异常。
+        子类根据需要实现。
+        """
+        return False
+
     def build_detail_params(self, post_id: str) -> Dict[str, Any]:
         params = dict(self.detail_endpoint.default_params)
         params.update({"postId": post_id})

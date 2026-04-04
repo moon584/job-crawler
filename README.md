@@ -1,7 +1,17 @@
-# 腾讯招聘爬虫
+# 招聘官网爬虫框架
 
-用于按公司分类抓取腾讯招聘官网岗位信息，支持配置化扩展与增量写库。
+用于按公司分类抓取各大招聘官网岗位信息，支持配置化与代码级扩展、增量写库及软删除数据同步。
 
+## 核心特性
+- **支持四大类爬虫模式**：
+  - **基于配置的 JSON 爬虫 (ConfigProvider)**：通过在 `rules/company.json` 配置路径映射即可接入接口简单的官网（如腾讯）。
+  - **定制 API 爬虫 (CustomApiProvider)**：支持编写 Python 代码接管加密、签名、动态字段重组（如美团），支持复用底层节流和入库逻辑。
+  - **基于 HTML 的爬虫 (HtmlProvider)**：对于只返回 HTML 网页的传统系统，使用 BeautifulSoup/lxml 解析。
+  - **动态爬虫 (DynamicProvider)**：支持通过无头浏览器抓取复杂反爬系统（预留）。
+- **智能增量更新与软删除**：
+  - 快爬（Fast）模式下，通过最新发布时间或唯一链接 (`job_url`) 增量获取，新岗位直接入库。
+  - 慢爬（Slow）模式下，针对官网下架岗位提供“预标记 -> 复活 -> 统计未命中”的机制。不论是快爬发现分类数量超出还是慢爬收尾，框架均不再直接硬删数据，而是将下架岗位软删（`is_deleted=1`）。只有运行专用清理脚本时，才会进行物理删除。
+- **自动恢复认证 (Auth Refresh)**：内置 `AuthError` 异常捕捉，一旦检测到 Cookie/Token 过期，框架可触发爬虫自带的登录刷新动作，成功后自动重试刚失败的接口，彻底防止抓到一半断网或被踢。
 ## 快速上手顺序
 1. **配置数据库**：执行 `sql.sql` 初始化结构，确保 `company/category/job` 三表可用。
 2. **配置环境变量**：创建 `.env` 并写入数据库连接信息。
@@ -64,7 +74,7 @@ python main.py --rules rules/company.json [--env-file .env] [--dry-run]
 3. 选择爬取模式：`fast` 快爬，`slow` 慢爬。
 4. 输入要抓取的分类 ID，逗号分隔或输入 `all` 全部分类。
 5. 输入每个分类抓取条数，数字或 `all`。
-6. `fast` 模式会按 `official_job_count` 与 `crawled_job_count` 判断是否可跳过；`slow` 模式会先把岗位标记 `is_deleted=1`，抓取命中岗位回写 `is_deleted=0`，最后删除仍为 `1` 的旧岗位。
+6. `fast` 模式会按官网分类数量判定是否可跳过（超量数据会被标记为待删除 `is_deleted=1`）。`slow` 模式会先把该公司的所有岗位标记为 `is_deleted=1`，只要本次抓取命中了，就回写 `is_deleted=0` 复活它。最后，系统统计并提示有多少 `is_deleted=1` 的旧岗位，你可以通过清理脚本集中删除。
 
 常用参数：
 - `--env-file`: 指定自定义 env 文件。
@@ -119,7 +129,8 @@ python main.py --rules rules/company.json [--env-file .env] [--dry-run]
 
 ## 日志与增量策略
 - HTTP 客户端自带节流及重试，若响应不是合法 JSON，会记录状态码与片段并重试。
-- `JobCrawler` 会统计每个分类成功/失败数量，并在 `dry-run` 模式下只打印 SQL；常规模式执行增量写库时，若 `job_url` 已存在则直接跳过该职位，避免重复请求详情和重复写入。慢爬模式通过 `is_deleted` 软删除收敛：先标记、命中岗位复活、最后删除未命中的历史职位。
+- `JobCrawler` 会统计每个分类成功/失败数量，并在 `dry-run` 模式下只打印 SQL；常规模式执行增量写库时，若 `job_url` 已存在则直接跳过该职位，避免重复请求详情和重复写入。
+- 对于下架职位（即本地有但本次没抓到的职位），爬虫会将其标记为 `is_deleted=1`，而**不会发生硬删除**。请定期运行独立清理脚本以保持数据库健康。
 
 ## 常见问题
 - **ModuleNotFoundError: crawler**：请确认从仓库根目录运行 `pytest` 或 `python main.py`，测试已在 `tests/conftest.py` 中处理路径。
@@ -135,6 +146,13 @@ pytest
 测试涵盖时间解析、分类兜底、HTTP JSON 失败重试等关键逻辑，建议在修改规则或核心代码后运行。
 
 ## 数据维护
+
+- **清理软删除岗位**：任何因下架或分类变更而被标记为 `is_deleted=1` 的数据不会自动硬删，需手动执行（或在爬虫运行结束后根据交互提示执行）：
+  ```bash
+  python tools/clean_deleted_jobs.py --company C007  # 删除 C007 的软删记录
+  python tools/clean_deleted_jobs.py                 # 全量清理所有废弃记录
+  ```
+  加上 `--dry-run` 则只统计条数。
 
 - **规则可视化编辑（Web）**：运行内置 Flask 服务即可在浏览器中编辑 `rules/company.json`，支持实时校验与保存。
 
@@ -152,10 +170,10 @@ python tools/rules_frontend_server.py --host 127.0.0.1 --port 8000
 python tools/validate_rules.py --rules rules/company.json --schema rules/company.schema.json
 ```
 
-- **批量重排旧职位ID**：当历史导入导致 `job.id` 出现空洞或顺序错乱时，使用 `rebuild_job_ids.py` 可同时满足“全量修复”和“定向修复”两种场景。
+- **批量重排旧职位ID**：当历史导入导致 `job.id` 出现空洞或顺序错乱时，使用 `tools/rebuild_job_ids.py` 可同时满足“全量修复”和“定向修复”两种场景。
 
 ```bash
-    python rebuild_job_ids.py --company-id C001 --dry-run --env-file .env
+    python tools/rebuild_job_ids.py --company-id C001 --dry-run --env-file .env
 ```
 
 - 取消 `--dry-run` 即会真实写库；不指定 `--company-id` 会遍历 job 表里全部公司。还支持 `--limit` 仅处理前 N 条、`--preview` 控制日志示例长度、`--log-level` 自定义输出等级。脚本会先自动把 `job` 表完整备份到 `backups/` 目录：

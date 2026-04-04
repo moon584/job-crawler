@@ -21,7 +21,13 @@ class HttpClient:
         """按规则发起HTTP请求并返回JSON（中文注释）。"""
         params = dict(endpoint.default_params)
         params.update(extra_params)
-        return self._request(endpoint, params, headers)
+        return self._request(endpoint, params, headers, return_json=True)
+
+    def fetch_text(self, endpoint: APIEndpoint, extra_params: Dict[str, Any], headers: Optional[Dict[str, str]] = None) -> str:
+        """按规则发起HTTP请求并返回原始文本（中文注释）。"""
+        params = dict(endpoint.default_params)
+        params.update(extra_params)
+        return self._request(endpoint, params, headers, return_json=False)
 
     def warmup(self, url: str, headers: Optional[Dict[str, str]] = None) -> None:
         """预热会话：访问页面以获取服务端下发的会话cookie。"""
@@ -53,7 +59,7 @@ class HttpClient:
         if last_error:
             raise last_error
 
-    def _request(self, endpoint: APIEndpoint, payload: Dict[str, Any], headers: Optional[Dict[str, str]]) -> Dict[str, Any]:
+    def _request(self, endpoint: APIEndpoint, payload: Dict[str, Any], headers: Optional[Dict[str, str]], return_json: bool = True) -> Any:
         """包含指数退避重试的底层请求逻辑（中文注释）。"""
         backoff = 1.0
         last_error: Optional[Exception] = None
@@ -88,7 +94,10 @@ class HttpClient:
                         timeout=self._throttle.timeout,
                     )
                 response.raise_for_status()
-                return response.json()
+                if return_json:
+                    return response.json()
+                else:
+                    return response.text
             except requests.RequestException as exc:
                 last_error = exc
                 logging.warning(

@@ -48,8 +48,8 @@ class ResponseConfig:
 class ConfigDrivenProvider(BaseProvider):
     """通用配置驱动 Provider，通过 JSON 描述官网差异。"""
 
-    def __init__(self, rule) -> None:  # type: ignore[override]
-        super().__init__(rule)
+    def __init__(self, rule, http_client=None) -> None:  # type: ignore[override]
+        super().__init__(rule, http_client)
         self.extra = self._expand_env_vars(deepcopy(self.extra))
         list_cfg = self.extra.get("list", {})
         detail_cfg = self.extra.get("detail", {})
@@ -223,7 +223,8 @@ class ConfigDrivenProvider(BaseProvider):
 
     @staticmethod
     def _current_timestamp() -> int:
-        return int(datetime.utcnow().timestamp() * 1000)
+        from datetime import timezone
+        return int(datetime.now(timezone.utc).timestamp() * 1000)
 
     def _merge_category_context(self, post: Optional[Dict[str, Any]], detail: Optional[Dict[str, Any]]) -> Dict[str, Any]:
         context: Dict[str, Any] = {}

@@ -24,7 +24,7 @@ class _FakeDB:
         self.marked_companies: list[str] = []
         self.purged_companies: list[str] = []
         self.cleared_companies: list[str] = []
-        self.touched_urls: list[str] = []
+        self.touched_urls: list[tuple[str, int]] = []
 
     def fetch_job_by_url(self, job_url: str) -> dict[str, object] | None:
         return self.existing_job
@@ -73,32 +73,32 @@ class _FakeDB:
         self.job_count_by_category[category_id] = 0
         return removed
 
-    def mark_jobs_deleted_by_category(self, category_id: str) -> int:
-        self.marked_categories.append(category_id)
+    def mark_jobs_deleted_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+        self.marked_categories.append(f"{company_id}:{category_id}:{job_type}")
         return self.job_count_by_category.get(category_id, 0)
 
-    def mark_jobs_deleted_by_company(self, company_id: str) -> int:
-        self.marked_companies.append(company_id)
+    def mark_jobs_deleted_by_company(self, company_id: str, job_type: int) -> int:
+        self.marked_companies.append(f"{company_id}:{job_type}")
         return 0
 
-    def touch_job_alive_by_url(self, job_url: str) -> bool:
-        self.touched_urls.append(job_url)
+    def touch_job_alive_by_url(self, job_url: str, job_type: int) -> bool:
+        self.touched_urls.append((job_url, job_type))
         return True
 
-    def purge_deleted_jobs_by_category(self, category_id: str) -> int:
-        self.purged_categories.append(category_id)
+    def purge_deleted_jobs_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+        self.purged_categories.append(f"{company_id}:{category_id}:{job_type}")
         return 0
 
-    def purge_deleted_jobs_by_company(self, company_id: str) -> int:
-        self.purged_companies.append(company_id)
+    def purge_deleted_jobs_by_company(self, company_id: str, job_type: int) -> int:
+        self.purged_companies.append(f"{company_id}:{job_type}")
         return 0
 
-    def clear_deleted_marks_by_category(self, category_id: str) -> int:
-        self.cleared_categories.append(category_id)
+    def clear_deleted_marks_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+        self.cleared_categories.append(f"{company_id}:{category_id}:{job_type}")
         return 0
 
-    def clear_deleted_marks_by_company(self, company_id: str) -> int:
-        self.cleared_companies.append(company_id)
+    def clear_deleted_marks_by_company(self, company_id: str, job_type: int) -> int:
+        self.cleared_companies.append(f"{company_id}:{job_type}")
         return 0
 
 
@@ -162,8 +162,8 @@ def test_persist_record_skips_when_job_url_exists() -> None:
 
     inserted = crawler._persist_record(record)
 
-    assert inserted is False
-    assert fake_db.update_payload is None
+    assert inserted is True
+    assert fake_db.update_payload is not None
 
 
 def test_resolve_category_mappings_uses_default_when_database_empty() -> None:
@@ -398,8 +398,95 @@ def test_run_fetches_detail_when_pre_skip_disabled(monkeypatch: pytest.MonkeyPat
     stats = crawler.run()
 
     assert detail_called["value"] is True
+    assert stats.skipped_existing == 0
+    assert stats.success == 1
+    assert stats.failed == 0
+
+
+def test_run_slow_mode_skips_only_when_existing_success(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    fake_db = _FakeDB()
+    fake_db.existing_job = {"id": "C001J00001", "crawl_status": 1}
+    fake_db.category_mappings = [
+        CategoryMapping(
+            db_category_id="CAT001",
+            api_category_id="40001001",
+            crawled_job_count=0,
+            official_job_count=-1,
+        )
+    ]
+    provider = _FakeProvider()
+    provider.supports_auto_category = lambda: False
+    provider.extract_post_id = lambda post: "1"
+    provider.predict_job_url = lambda post: "https://example.com/job/1"
+    crawler = JobCrawler(
+        fake_db,
+        http_client=object(),
+        provider=provider,
+        job_type=1,
+        crawl_mode="slow",
+    )
+    monkeypatch.setattr(crawler, "_fetch_posts", lambda category_id, post_limit: [{"jobUnionId": "1"}])
+    monkeypatch.setattr(
+        crawler,
+        "_fetch_detail",
+        lambda post_id: (_ for _ in ()).throw(AssertionError("_fetch_detail should not be called for crawl_status=1")),
+    )
+
+    with caplog.at_level("INFO"):
+        stats = crawler.run()
+
     assert stats.skipped_existing == 1
     assert stats.success == 0
+    assert stats.failed == 0
+    assert fake_db.marked_categories == ["C001:CAT001:1"]
+    assert fake_db.purged_categories == ["C001:CAT001:1"]
+    assert fake_db.touched_urls == [("https://example.com/job/1", 1)]
+    assert "慢爬收尾统计 company=C001 category=CAT001 job_type=1" in "".join(caplog.messages)
+
+
+def test_run_slow_mode_retries_existing_failed_job(monkeypatch: pytest.MonkeyPatch) -> None:
+    fake_db = _FakeDB()
+    fake_db.existing_job = {"id": "C001J00001", "crawl_status": 0}
+    fake_db.category_mappings = [
+        CategoryMapping(
+            db_category_id="CAT001",
+            api_category_id="40001001",
+            crawled_job_count=0,
+            official_job_count=-1,
+        )
+    ]
+    provider = _FakeProvider()
+    provider.supports_auto_category = lambda: False
+    provider.extract_post_id = lambda post: "1"
+    provider.predict_job_url = lambda post: "https://example.com/job/1"
+    provider.build_job_record = lambda category_id, detail, crawled_at: _make_record(
+        crawled_at,
+        category_id=category_id,
+        job_url="https://example.com/job/1",
+    )
+    crawler = JobCrawler(
+        fake_db,
+        http_client=object(),
+        provider=provider,
+        job_type=1,
+        crawl_mode="slow",
+    )
+    monkeypatch.setattr(crawler, "_fetch_posts", lambda category_id, post_limit: [{"jobUnionId": "1"}])
+    detail_called = {"value": False}
+
+    def _fake_detail(post_id: str) -> dict[str, object]:
+        detail_called["value"] = True
+        return {"jobUnionId": post_id}
+
+    monkeypatch.setattr(crawler, "_fetch_detail", _fake_detail)
+
+    stats = crawler.run()
+
+    assert detail_called["value"] is True
+    assert stats.skipped_existing == 0
+    assert stats.success == 1
     assert stats.failed == 0
 
 

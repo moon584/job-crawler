@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
+import threading
 from typing import Dict, Optional
 
 
@@ -72,23 +73,30 @@ class CrawlStats:
     detail_failures: int = 0
     per_category: Dict[str, int] = field(default_factory=dict)
     skipped_existing: int = 0
+    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False, init=False)
 
     def record_category(self, category_id: str, count: int) -> None:
-        self.per_category[category_id] = self.per_category.get(category_id, 0) + count
+        with self._lock:
+            self.per_category[category_id] = self.per_category.get(category_id, 0) + count
 
     def record_success(self) -> None:
-        self.total_posts += 1
-        self.success += 1
+        with self._lock:
+            self.total_posts += 1
+            self.success += 1
 
     def record_failure(self) -> None:
-        self.total_posts += 1
-        self.failed += 1
+        with self._lock:
+            self.total_posts += 1
+            self.failed += 1
 
     def record_list_failure(self) -> None:
-        self.list_failures += 1
+        with self._lock:
+            self.list_failures += 1
 
     def record_detail_failure(self) -> None:
-        self.detail_failures += 1
+        with self._lock:
+            self.detail_failures += 1
 
     def record_skip_existing(self) -> None:
-        self.skipped_existing += 1
+        with self._lock:
+            self.skipped_existing += 1

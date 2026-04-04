@@ -25,6 +25,10 @@ htmlcov/
 # Logs and temp files
 *.log
 *.tmp
+tmp_*
 .DS_Store
 Thumbs.db
 backups/
+
+# Claude / AI Assistants
+.claude/

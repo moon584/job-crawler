@@ -9,6 +9,7 @@
       }
     },
     "extra": {
+      "crawl_mode": "fast",
       "field_map": {
         "bonus": "ImportantItem",
         "description": "Responsibility",
@@ -71,33 +72,39 @@
   {
     "company_id": "C007",
     "company_name": "Meituan",
+    "provider": "meituan",
+    "list_api": {
+      "url": "https://zhaopin.meituan.com/api/official/job/getJobList",
+      "method": "POST",
+      "default_params": {
+        "page": {
+          "pageNo": 1,
+          "pageSize": 10
+        },
+        "jobShareType": "1",
+        "keywords": "",
+        "cityList": [],
+        "department": [],
+        "jfJgList": [],
+        "jobType": [
+          {
+            "code": "3",
+            "subCode": []
+          }
+        ],
+        "typeCode": [],
+        "specialCode": []
+      }
+    },
     "detail_api": {
       "url": "https://zhaopin.meituan.com/api/official/job/getJobDetail",
       "method": "POST",
       "default_params": {}
     },
     "extra": {
+      "crawl_mode": "slow",
       "default_category_id": "C007DEFAULT",
       "default_api_category_id": "MEITUAN_ALL",
-      "field_map": {
-        "bonus": "precedence",
-        "description": "jobDuty",
-        "job_url": "jobUnionId",
-        "location": "cityList",
-        "publish_time": "refreshTime",
-        "requirement": "jobRequirement",
-        "title": "name",
-        "work_experience": "workYear"
-      },
-      "default_values": {
-        "bonus": "",
-        "description": "",
-        "location": "",
-        "requirement": "",
-        "salary": "面议",
-        "work_experience": ""
-      },
-      "auto_category_mode": true,
       "warmup_urls": [
         "https://zhaopin.meituan.com/web/social"
       ],
@@ -154,115 +161,8 @@
         "referer": "https://zhaopin.meituan.com/web/social",
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
         "x-requested-with": "XMLHttpRequest"
-      },
-      "preserve_empty_string_fields": [
-        "keywords",
-        "keyWord"
-      ],
-      "job_type_overrides": {
-        "1": {
-          "list_api": {
-            "url": "https://zhaopin.meituan.com/api/official/job/getJobList",
-            "method": "POST",
-            "default_params": {
-              "jobShareType": "1",
-              "jobType": [
-                {
-                  "code": "1",
-                  "subCode": []
-                },
-                {
-                  "code": "2",
-                  "subCode": []
-                }
-              ]
-            }
-          },
-          "extra": {
-            "warmup_urls": [
-              "https://zhaopin.meituan.com/web/campus"
-            ],
-            "list_headers": {
-              "accept": "application/json",
-              "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
-              "cookie": "${MEITUAN_CAMPUS_COOKIE}",
-              "content-type": "application/json",
-              "origin": "https://zhaopin.meituan.com",
-              "referer": "https://zhaopin.meituan.com/web/campus",
-              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
-              "x-requested-with": "XMLHttpRequest"
-            },
-            "detail_headers": {
-              "accept": "application/json",
-              "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
-              "cookie": "${MEITUAN_CAMPUS_COOKIE}",
-              "content-type": "application/json",
-              "origin": "https://zhaopin.meituan.com",
-              "referer": "https://zhaopin.meituan.com/web/campus",
-              "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
-              "x-requested-with": "XMLHttpRequest"
-            },
-            "list": {
-              "page_param": "page.pageNo",
-              "size_param": "page.pageSize",
-              "page_size": 10
-            },
-            "url_templates": {
-              "job_url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId={jobUnionId}&highlightType=campus"
-            }
-          }
-        }
-      },
-      "list": {
-        "category_param": null,
-        "code_field": "status",
-        "count_path": "page.totalCount",
-        "data_path": "data",
-        "page_param": "page.pageNo",
-        "page_size": 10,
-        "post_id_field": "jobUnionId",
-        "posts_path": "list",
-        "size_param": "page.pageSize",
-        "success_value": 0,
-        "success_values": [0, 1],
-        "timestamp_param": null
-      },
-      "detail": {
-        "code_field": "status",
-        "data_path": "data",
-        "post_id_field": "jobUnionId",
-        "success_value": 0,
-        "success_values": [0, 1],
-        "timestamp_param": null
-      },
-      "url_templates": {
-        "job_url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId={jobUnionId}&highlightType=social"
       }
     },
-    "list_api": {
-      "url": "https://zhaopin.meituan.com/api/official/job/getJobList",
-      "method": "POST",
-      "default_params": {
-        "page": {
-          "pageNo": 1,
-          "pageSize": 10
-        },
-        "jobShareType": "1",
-        "keywords": "",
-        "cityList": [],
-        "department": [],
-        "jfJgList": [],
-        "jobType": [
-          {
-            "code": "3",
-            "subCode": []
-          }
-        ],
-        "typeCode": [],
-        "specialCode": []
-      }
-    },
-    "provider": "config",
     "throttle": {
       "max_retries": 3,
       "max_seconds": 1,

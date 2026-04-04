@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 import logging
+import queue
+import threading
+from contextlib import contextmanager
 from typing import Dict, Iterable, Iterator, List, Optional, Set
 
 import pymysql
@@ -15,32 +17,83 @@ from .utils import normalize_category_id
 class Database:
     """封装MySQL操作的轻量封装层（中文注释）。"""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, max_connections: int = 10) -> None:
         self._settings = settings
-        self._connection: Optional[pymysql.connections.Connection] = None
+        self._max_connections = max_connections
+        self._pool: queue.Queue[pymysql.connections.Connection] = queue.Queue(maxsize=max_connections)
+        self._pool_lock = threading.Lock()
+        self._current_connections = 0
 
-    def _ensure_connection(self) -> pymysql.connections.Connection:
-        if self._connection is None or not self._connection.open:
-            self._connection = pymysql.connect(
-                host=self._settings.db_host,
-                port=self._settings.db_port,
-                user=self._settings.db_user,
-                password=self._settings.db_password,
-                database=self._settings.db_name,
-                charset="utf8mb4",
-                cursorclass=DictCursor,
-                autocommit=False,
-            )
-        return self._connection
+    def _create_connection(self) -> pymysql.connections.Connection:
+        return pymysql.connect(
+            host=self._settings.db_host,
+            port=self._settings.db_port,
+            user=self._settings.db_user,
+            password=self._settings.db_password,
+            database=self._settings.db_name,
+            charset="utf8mb4",
+            cursorclass=DictCursor,
+            autocommit=False,
+            read_timeout=30,
+            write_timeout=30,
+        )
+
+    def _get_connection(self) -> pymysql.connections.Connection:
+        try:
+            conn = self._pool.get_nowait()
+            try:
+                conn.ping(reconnect=True)
+            except Exception:
+                conn = self._create_connection()
+            return conn
+        except queue.Empty:
+            with self._pool_lock:
+                if self._current_connections < self._max_connections:
+                    self._current_connections += 1
+                    create_new = True
+                else:
+                    create_new = False
+            if create_new:
+                try:
+                    return self._create_connection()
+                except Exception:
+                    with self._pool_lock:
+                        self._current_connections -= 1
+                    raise
+            conn = self._pool.get(block=True, timeout=60)
+            try:
+                conn.ping(reconnect=True)
+            except Exception:
+                conn = self._create_connection()
+            return conn
+
+    def _release_connection(self, conn: pymysql.connections.Connection) -> None:
+        try:
+            self._pool.put_nowait(conn)
+        except queue.Full:
+            try:
+                conn.close()
+            except Exception:
+                pass
+            with self._pool_lock:
+                self._current_connections -= 1
 
     @contextmanager
     def cursor(self) -> Iterator[DictCursor]:
-        conn = self._ensure_connection()
+        conn = self._get_connection()
         cursor = conn.cursor()
         try:
             yield cursor
+            conn.commit()
+        except Exception:
+            try:
+                conn.rollback()
+            except Exception:
+                pass
+            raise
         finally:
             cursor.close()
+            self._release_connection(conn)
 
     def fetch_category_mappings(
         self,
@@ -126,7 +179,6 @@ class Database:
                     "INSERT INTO category (id, name, parent_id, level, categoryid) VALUES (%s, %s, %s, %s, %s)",
                     (category_id, category_id, company_id, 0, None),
                 )
-        self._ensure_connection().commit()
         return missing_ids
 
     def generate_next_job_id(self, company_id: str) -> str:
@@ -169,7 +221,6 @@ class Database:
         sql = f"INSERT INTO job ({columns}) VALUES ({placeholders})"
         with self.cursor() as cur:
             cur.execute(sql, tuple(job_values.values()))
-        self._ensure_connection().commit()
 
     def update_job(self, job_id: str, changes: Dict[str, object]) -> None:
         if not changes:
@@ -179,7 +230,6 @@ class Database:
         params = list(changes.values()) + [job_id]
         with self.cursor() as cur:
             cur.execute(sql, params)
-        self._ensure_connection().commit()
 
     def count_jobs_in_category(self, category_id: str) -> int:
         """统计指定分类当前已写入的职位数量。"""
@@ -188,68 +238,81 @@ class Database:
             row = cur.fetchone() or {"total": 0}
         return int(row["total"] or 0)
 
-    def delete_jobs_by_category(self, category_id: str) -> int:
-        """删除指定分类下的所有职位记录，返回受影响行数。"""
-        with self.cursor() as cur:
-            cur.execute("DELETE FROM job WHERE category_id=%s", (category_id,))
-            deleted = cur.rowcount or 0
-        self._ensure_connection().commit()
-        return deleted
-
-    def mark_jobs_deleted_by_category(self, category_id: str) -> int:
-        """慢爬准备阶段：先将分类下职位标记为待删除。"""
+    def mark_jobs_deleted_by_category_count(self, category_id: str) -> int:
+        """直接把某分类下所有岗位软删（由于增量更新，常用于 fast 模式刷新某分类）"""
         with self.cursor() as cur:
             cur.execute("UPDATE job SET is_deleted=1 WHERE category_id=%s", (category_id,))
             affected = cur.rowcount or 0
-        self._ensure_connection().commit()
         return affected
 
-    def mark_jobs_deleted_by_company(self, company_id: str) -> int:
-        """慢爬自动分类准备阶段：先将公司下职位标记为待删除。"""
+    def mark_jobs_deleted_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+        """慢爬准备阶段：按 company+category+job_type 标记待删除（is_deleted=1）。"""
         with self.cursor() as cur:
-            cur.execute("UPDATE job SET is_deleted=1 WHERE company_id=%s", (company_id,))
+            cur.execute(
+                "UPDATE job SET is_deleted=1 WHERE company_id=%s AND category_id=%s AND job_type=%s",
+                (company_id, category_id, job_type),
+            )
             affected = cur.rowcount or 0
-        self._ensure_connection().commit()
         return affected
 
-    def touch_job_alive_by_url(self, job_url: str) -> bool:
-        """命中列表中的岗位即视为存活，取消待删除标记。"""
+    def mark_jobs_deleted_by_company(self, company_id: str, job_type: int) -> int:
+        """慢爬自动分类准备阶段：先将公司+job_type 下职位标记为待删除（is_deleted=1）。"""
         with self.cursor() as cur:
-            cur.execute("UPDATE job SET is_deleted=0 WHERE job_url=%s", (job_url,))
+            cur.execute(
+                "UPDATE job SET is_deleted=1 WHERE company_id=%s AND job_type=%s",
+                (company_id, job_type),
+            )
             affected = cur.rowcount or 0
-        self._ensure_connection().commit()
+        return affected
+
+    def touch_job_alive_by_url(self, job_url: str, job_type: int) -> bool:
+        """命中列表中的岗位即视为本次已抓到，取消待删除标记（is_deleted=0）。"""
+        with self.cursor() as cur:
+            cur.execute(
+                "UPDATE job SET is_deleted=0 WHERE job_url=%s AND job_type=%s",
+                (job_url, job_type),
+            )
+            affected = cur.rowcount or 0
         return affected > 0
 
-    def purge_deleted_jobs_by_category(self, category_id: str) -> int:
-        """慢爬收尾：删除仍处于待删除标记的职位。"""
+    def purge_deleted_jobs_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+        """统计慢爬收尾：按 company+category+job_type 记录有多少仍在待删除状态的职位。实际不再硬删。"""
         with self.cursor() as cur:
-            cur.execute("DELETE FROM job WHERE category_id=%s AND is_deleted=1", (category_id,))
-            deleted = cur.rowcount or 0
-        self._ensure_connection().commit()
-        return deleted
+            cur.execute(
+                "SELECT COUNT(*) as total FROM job WHERE company_id=%s AND category_id=%s AND job_type=%s AND is_deleted=1",
+                (company_id, category_id, job_type),
+            )
+            row = cur.fetchone() or {"total": 0}
+            return int(row["total"] or 0)
 
-    def purge_deleted_jobs_by_company(self, company_id: str) -> int:
-        """慢爬自动分类收尾：删除公司下仍处于待删除标记的职位。"""
+    def purge_deleted_jobs_by_company(self, company_id: str, job_type: int) -> int:
+        """统计慢爬自动分类收尾：按公司+job_type 记录有多少仍在待删除状态的职位。实际不再硬删。"""
         with self.cursor() as cur:
-            cur.execute("DELETE FROM job WHERE company_id=%s AND is_deleted=1", (company_id,))
-            deleted = cur.rowcount or 0
-        self._ensure_connection().commit()
-        return deleted
+            cur.execute(
+                "SELECT COUNT(*) as total FROM job WHERE company_id=%s AND job_type=%s AND is_deleted=1",
+                (company_id, job_type),
+            )
+            row = cur.fetchone() or {"total": 0}
+            return int(row["total"] or 0)
 
-    def clear_deleted_marks_by_category(self, category_id: str) -> int:
-        """慢爬异常回滚：取消分类下待删除标记，避免误删。"""
+    def clear_deleted_marks_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
+        """慢爬异常回滚：按 company+category+job_type 撤销待删除标记。"""
         with self.cursor() as cur:
-            cur.execute("UPDATE job SET is_deleted=0 WHERE category_id=%s AND is_deleted=1", (category_id,))
+            cur.execute(
+                "UPDATE job SET is_deleted=0 WHERE company_id=%s AND category_id=%s AND job_type=%s AND is_deleted=1",
+                (company_id, category_id, job_type),
+            )
             affected = cur.rowcount or 0
-        self._ensure_connection().commit()
         return affected
 
-    def clear_deleted_marks_by_company(self, company_id: str) -> int:
-        """慢爬异常回滚：取消公司下待删除标记，避免误删。"""
+    def clear_deleted_marks_by_company(self, company_id: str, job_type: int) -> int:
+        """慢爬异常回滚：恢复公司+job_type 下标记位，避免中断后状态残留。"""
         with self.cursor() as cur:
-            cur.execute("UPDATE job SET is_deleted=0 WHERE company_id=%s AND is_deleted=1", (company_id,))
+            cur.execute(
+                "UPDATE job SET is_deleted=0 WHERE company_id=%s AND job_type=%s AND is_deleted=1",
+                (company_id, job_type),
+            )
             affected = cur.rowcount or 0
-        self._ensure_connection().commit()
         return affected
 
     def sync_category_counts(self, category_id: str, official_total: Optional[int] = None) -> int:
@@ -266,15 +329,18 @@ class Database:
                     "UPDATE category SET crawled_job_count=%s, official_job_count=%s WHERE id=%s",
                     (crawled_total, max(official_total, 0), category_id),
                 )
-        self._ensure_connection().commit()
         return crawled_total
 
     def rollback(self) -> None:
-        conn = self._ensure_connection()
-        conn.rollback()
+        pass  # Rollback is now handled automatically within the cursor context manager
 
     def close(self) -> None:
-        if self._connection and self._connection.open:
-            self._connection.close()
-            self._connection = None
+        with self._pool_lock:
+            while not self._pool.empty():
+                try:
+                    conn = self._pool.get_nowait()
+                    conn.close()
+                except Exception:
+                    pass
+            self._current_connections = 0
 

@@ -588,7 +588,7 @@ class JobCrawler:
     def _touch_existing_job(self, job_url: str) -> None:
         if self._dry_run:
             return
-        touched = self._db.touch_job_alive_by_url(job_url, self._job_type)
+        touched = self._db.touch_job_alive_by_url(job_url, self._job_type, self._crawl_start_time)
         if not touched:
             logging.debug("未找到可复活的已存在岗位：%s", job_url)
 

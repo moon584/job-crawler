@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 import concurrent.futures
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import os
 import threading
@@ -102,6 +102,7 @@ class JobCrawler:
     ) -> CrawlStats:
         """执行爬取，支持指定分类和条数限制（中文注释）。"""
         self._start_quit_listener()
+        self._crawl_start_time = datetime.now(timezone.utc).replace(tzinfo=None)
         try:
             if self._provider.supports_auto_category():
                 if target_categories:
@@ -115,8 +116,6 @@ class JobCrawler:
                 return stats
             for mapping in category_mappings:
                 list_failed = False
-                if self._is_slow_mode:
-                    self._prepare_slow_category(mapping.db_category_id)
                 if self._check_quit_requested():
                     break
                 if not self._is_slow_mode and self._should_skip_category(mapping):
@@ -154,7 +153,7 @@ class JobCrawler:
                                 logging.exception("任务执行过程中发生未捕获异常")
                 finally:
                     if self._is_slow_mode:
-                        self._finalize_slow_category(mapping.db_category_id, list_failed)
+                        self._finalize_slow_category(mapping.db_category_id, list_failed, post_limit)
                     self._refresh_category_counts(mapping.db_category_id, official_total)
             logging.info(
                 "分类抓取完成：共处理%s条，成功%s条，失败%s条，跳过%s条",
@@ -272,8 +271,6 @@ class JobCrawler:
                 "自动分类模式要求数据库已存在 default_category_id=%s 的分类记录" % default_category_id
             )
         list_failed = False
-        if self._is_slow_mode:
-            self._prepare_slow_company()
         previous_list_failures = stats.list_failures
         try:
             posts = self._fetch_posts(base_api_category, post_limit)
@@ -309,7 +306,7 @@ class JobCrawler:
                     logging.exception("任务执行过程中发生未捕获异常")
 
         if self._is_slow_mode:
-            self._finalize_slow_company(list_failed)
+            self._finalize_slow_company(list_failed, post_limit)
             for category_id in known_category_ids:
                 self._refresh_category_counts(category_id, official_total=None)
         else:
@@ -569,56 +566,54 @@ class JobCrawler:
         return job_url
 
     def _prepare_slow_category(self, category_id: str) -> None:
-        if self._dry_run:
-            logging.info("[DRY-RUN] 慢爬预标记分类 %s (job_type=%s) 的职位为待删除", category_id, self._job_type)
-            return
-        affected = self._db.mark_jobs_deleted_by_category(self._provider.company_id, category_id, self._job_type)
-        logging.info("慢爬预标记完成：分类 %s (job_type=%s) 共标记 %s 条", category_id, self._job_type, affected)
+        pass
 
-    def _finalize_slow_category(self, category_id: str, list_failed: bool) -> None:
+    def _finalize_slow_category(self, category_id: str, list_failed: bool, post_limit: Optional[int]) -> None:
         if self._dry_run:
             logging.info("[DRY-RUN] 慢爬收尾跳过分类 %s 的删除统计阶段", category_id)
             return
         if list_failed:
-            restored = self._db.clear_deleted_marks_by_category(self._provider.company_id, category_id, self._job_type)
-            logging.warning("分类 %s (job_type=%s) 列表请求异常，已撤销 %s 条待删除标记", category_id, self._job_type, restored)
+            logging.warning("分类 %s (job_type=%s) 列表请求异常，不执行下架数据软删", category_id, self._job_type)
+            return
+        if post_limit is not None:
+            logging.info("分类 %s (job_type=%s) 存在 post_limit=%s，不执行下架数据软删", category_id, self._job_type, post_limit)
             return
 
-        # 此时不再真实调用 DELETE 操作，仅作统计，由 clean_deleted_jobs.py 手动硬删。
-        still_deleted = self._db.purge_deleted_jobs_by_category(self._provider.company_id, category_id, self._job_type)
-        if still_deleted > 0:
-            logging.info("【注意】分类 %s (job_type=%s) 仍有 %s 条下架职位被标记待删除。如需彻底删除，请运行清理脚本。", category_id, self._job_type, still_deleted)
+        affected = self._db.soft_delete_unseen_jobs_by_category(
+            self._provider.company_id, category_id, self._job_type, self._crawl_start_time
+        )
+        if affected > 0:
+            logging.info("【注意】分类 %s (job_type=%s) 已将 %s 条下架职位标记为待删除。如需彻底删除，请运行清理脚本。", category_id, self._job_type, affected)
 
 
     def _prepare_slow_company(self) -> None:
-        if self._dry_run:
-            logging.info(
-                "[DRY-RUN] 慢爬预标记公司 %s (job_type=%s) 的职位为待删除",
-                self._provider.company_id,
-                self._job_type,
-            )
-            return
-        affected = self._db.mark_jobs_deleted_by_company(self._provider.company_id, self._job_type)
-        logging.info("慢爬预标记完成：公司 %s (job_type=%s) 共标记 %s 条", self._provider.company_id, self._job_type, affected)
+        pass
 
-    def _finalize_slow_company(self, list_failed: bool) -> None:
+    def _finalize_slow_company(self, list_failed: bool, post_limit: Optional[int]) -> None:
         if self._dry_run:
             logging.info("[DRY-RUN] 慢爬收尾跳过公司 %s 的删除阶段", self._provider.company_id)
             return
         if list_failed:
-            restored = self._db.clear_deleted_marks_by_company(self._provider.company_id, self._job_type)
             logging.warning(
-                "公司 %s (job_type=%s) 列表请求异常，已撤销 %s 条待删除标记",
+                "公司 %s (job_type=%s) 列表请求异常，不执行下架数据软删",
                 self._provider.company_id,
                 self._job_type,
-                restored,
+            )
+            return
+        if post_limit is not None:
+            logging.info(
+                "公司 %s (job_type=%s) 存在 post_limit=%s，不执行下架数据软删",
+                self._provider.company_id,
+                self._job_type,
+                post_limit,
             )
             return
 
-        # 统计数量，不再真实 DELETE
-        still_deleted = self._db.purge_deleted_jobs_by_company(self._provider.company_id, self._job_type)
-        if still_deleted > 0:
-            logging.info("【注意】公司 %s (job_type=%s) 仍有 %s 条下架职位被标记待删除。如需彻底删除，请运行清理脚本。", self._provider.company_id, self._job_type, still_deleted)
+        affected = self._db.soft_delete_unseen_jobs_by_company(
+            self._provider.company_id, self._job_type, self._crawl_start_time
+        )
+        if affected > 0:
+            logging.info("【注意】公司 %s (job_type=%s) 已将 %s 条下架职位标记为待删除。如需彻底删除，请运行清理脚本。", self._provider.company_id, self._job_type, affected)
 
 
     def _touch_existing_job(self, job_url: str) -> None:

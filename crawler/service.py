@@ -638,21 +638,32 @@ class JobCrawler:
         if existing:
             existing_status = self._normalize_crawl_status(existing.get("crawl_status"))
             existing_id = existing.get("id")
-            if existing_status == 1:
-                # 不论快爬还是慢爬，如果抓到了就更新为 0
-                self._touch_existing_job(record.job_url)
-                logging.info("职位已存在且已成功抓取，按 job_url 跳过：%s", record.job_url)
-                return False
             if not existing_id:
                 logging.warning("命中无ID的历史记录，无法更新，跳过：%s", record.job_url)
                 return False
+
             changes = self._compute_changes(existing, record)
+
+            if not changes and existing_status == 1:
+                # 没有任何实质内容改变，且之前也是成功的
+                self._touch_existing_job(record.job_url)
+                logging.info("职位内容无变化，按 job_url 跳过：%s", record.job_url)
+                return False
+
+            # 有变化，或者之前是失败的，需要更新
             changes["crawl_status"] = 1
             changes["is_deleted"] = 0
             changes["crawled_at"] = record.crawled_at
             self._db.update_job(str(existing_id), changes)
-            logging.info("修复或更新历史职位：%s", record.job_url)
+
+            if existing_status == 0:
+                logging.info("修复失败的历史职位：%s", record.job_url)
+            else:
+                # 过滤掉辅助字段打印，只看业务字段
+                changed_keys = [k for k in changes.keys() if k not in ("crawl_status", "is_deleted", "crawled_at")]
+                logging.info("更新职位信息（有字段变化）：%s -> 变化字段: %s", record.job_url, changed_keys)
             return True
+
         record.is_deleted = 0
         record.id = self._db.generate_next_job_id(self._provider.company_id)
         record.created_at = record.crawled_at
@@ -745,9 +756,7 @@ class JobCrawler:
         for field in comparable_fields:
             if existing.get(field) != new_values[field]:
                 changes[field] = new_values[field]
-        if changes:
-            changes["crawl_status"] = record.crawl_status
-            changes["crawled_at"] = record.crawled_at
+        # 移除在这里强行添加 crawled_at 的行为，交由外部判断
         return changes
 
     def _should_skip_category(self, mapping: CategoryMapping) -> bool:

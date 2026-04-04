@@ -265,35 +265,35 @@ class Database:
             affected = cur.rowcount or 0
         return affected
 
-    def touch_job_alive_by_url(self, job_url: str, job_type: int) -> bool:
-        """命中列表中的岗位即视为本次已抓到，取消待删除标记（is_deleted=0）。"""
+    def touch_job_alive_by_url(self, job_url: str, job_type: int, crawled_at: datetime) -> bool:
+        """命中列表中的岗位即视为本次已抓到，取消待删除标记（is_deleted=0）并更新时间。"""
         with self.cursor() as cur:
             cur.execute(
-                "UPDATE job SET is_deleted=0 WHERE job_url=%s AND job_type=%s",
-                (job_url, job_type),
+                "UPDATE job SET is_deleted=0, crawled_at=%s WHERE job_url=%s AND job_type=%s",
+                (crawled_at, job_url, job_type),
             )
             affected = cur.rowcount or 0
         return affected > 0
 
-    def purge_deleted_jobs_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
-        """统计慢爬收尾：按 company+category+job_type 记录有多少仍在待删除状态的职位。实际不再硬删。"""
+    def soft_delete_unseen_jobs_by_category(self, company_id: str, category_id: str, job_type: int, before_time: datetime) -> int:
+        """慢爬收尾：按 company+category+job_type 将 crawled_at 早于本次爬虫开始时间的记录软删（is_deleted=1）。"""
         with self.cursor() as cur:
             cur.execute(
-                "SELECT COUNT(*) as total FROM job WHERE company_id=%s AND category_id=%s AND job_type=%s AND is_deleted=1",
-                (company_id, category_id, job_type),
+                "UPDATE job SET is_deleted=1 WHERE company_id=%s AND category_id=%s AND job_type=%s AND crawled_at < %s",
+                (company_id, category_id, job_type, before_time),
             )
-            row = cur.fetchone() or {"total": 0}
-            return int(row["total"] or 0)
+            affected = cur.rowcount or 0
+        return affected
 
-    def purge_deleted_jobs_by_company(self, company_id: str, job_type: int) -> int:
-        """统计慢爬自动分类收尾：按公司+job_type 记录有多少仍在待删除状态的职位。实际不再硬删。"""
+    def soft_delete_unseen_jobs_by_company(self, company_id: str, job_type: int, before_time: datetime) -> int:
+        """慢爬收尾：将整个公司+job_type 下 crawled_at 早于本次爬虫开始时间的记录软删（is_deleted=1）。"""
         with self.cursor() as cur:
             cur.execute(
-                "SELECT COUNT(*) as total FROM job WHERE company_id=%s AND job_type=%s AND is_deleted=1",
-                (company_id, job_type),
+                "UPDATE job SET is_deleted=1 WHERE company_id=%s AND job_type=%s AND crawled_at < %s",
+                (company_id, job_type, before_time),
             )
-            row = cur.fetchone() or {"total": 0}
-            return int(row["total"] or 0)
+            affected = cur.rowcount or 0
+        return affected
 
     def clear_deleted_marks_by_category(self, company_id: str, category_id: str, job_type: int) -> int:
         """慢爬异常回滚：按 company+category+job_type 撤销待删除标记。"""

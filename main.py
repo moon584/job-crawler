@@ -68,17 +68,9 @@ def prompt_job_type() -> int:
 
 
 def resolve_crawl_mode_from_rule(rule) -> str:
-    extra = getattr(rule, "extra", {}) or {}
-    configured = extra.get("crawl_mode") if isinstance(extra, dict) else None
-    if isinstance(configured, str):
-        mode = configured.strip().lower()
-        if mode in {"fast", "slow"}:
-            logging.info("使用规则中的爬取模式：%s", mode)
-            return mode
-        logging.warning("规则中的 crawl_mode=%r 非法，默认回退为 fast 模式", configured)
-    else:
-        logging.info("规则中未配置 crawl_mode，默认使用 fast 模式")
-    return "fast"
+    # 爬虫现已统一采用“心跳时间戳（Timestamp Heartbeat）”模式，
+    # crawl_mode 参数已废弃。此处保留函数以防外部引用，并固定返回 'unified'。
+    return "unified"
 
 
 def prompt_category_ids() -> Optional[List[str]]:
@@ -188,7 +180,6 @@ def main() -> None:
     rule = load_rule_file(args.rules, company_id)
     job_type = prompt_job_type()
     rule = apply_job_type_overrides(rule, job_type)
-    crawl_mode = resolve_crawl_mode_from_rule(rule)
 
     database = Database(settings)
     http_client = HttpClient(rule.throttle)
@@ -200,7 +191,7 @@ def main() -> None:
         http_client,
         provider,
         job_type=job_type,
-        crawl_mode=crawl_mode,
+        crawl_mode="unified",  # Force a single unified mode value
         dry_run=args.dry_run,
         max_workers=args.workers,
     )
@@ -208,7 +199,7 @@ def main() -> None:
     post_limit = prompt_post_limit()
 
     # 建立日志文件应延后到所需变量已确定后
-    log_file = setup_file_logging(company_id, job_type, crawl_mode)
+    log_file = setup_file_logging(company_id, job_type, "unified")
     logging.info("日志文件已创建：%s", log_file)
 
     try:

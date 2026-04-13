@@ -1,11 +1,13 @@
 # Python cache
 __pycache__/
 *.py[cod]
+*$py.class
 
 # Virtual environments
 .venv/
 venv/
 ENV/
+env/
 
 # Environment variables and secrets
 .env
@@ -14,6 +16,10 @@ ENV/
 
 # Test artifacts
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
 .coverage
 htmlcov/
 
@@ -26,9 +32,27 @@ htmlcov/
 *.log
 *.tmp
 tmp_*
+temp/
+logs/
 .DS_Store
 Thumbs.db
 backups/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Data artifacts
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.jsonl
+*.sqlite
+*.sqlite3
+*.db
+*.bak
 
 # Claude / AI Assistants
 .claude/

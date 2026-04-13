@@ -1,86 +1,60 @@
--- 创建数据库（如果不存在）
-CREATE DATABASE IF NOT EXISTS job_system;
-USE job_system;
+CREATE DATABASE IF NOT EXISTS job_recruitment
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_general_ci;
 
--- 删除旧表（注意顺序：先删除子表，再删除父表，避免外键约束冲突）
-DROP TABLE IF EXISTS `job`;
-DROP TABLE IF EXISTS `category`;
-DROP TABLE IF EXISTS `company`;
+USE job_recruitment;
 
--- 1. 公司表
-CREATE TABLE `company` (
-    `id` VARCHAR(16) NOT NULL COMMENT '公司ID，主键，格式如 C001',
-    `name` VARCHAR(100) NOT NULL COMMENT '公司名称',
-    `company_type` VARCHAR(30) DEFAULT NULL COMMENT '公司类型（国央企、大厂、外企等）',
-    `company_industry` VARCHAR(50) DEFAULT NULL COMMENT '所属行业（互联网、通信、能源等）',
-    `scale` VARCHAR(20) DEFAULT NULL COMMENT '公司规模（少于50人、50-150人等）',
-    `website` VARCHAR(255) DEFAULT NULL COMMENT '公司官网链接',
-    `profile` TEXT COMMENT '公司简介',
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录更新时间',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_name` (`name`)
+-- 公司表
+CREATE TABLE company (
+    id VARCHAR(16) PRIMARY KEY COMMENT '公司ID，格式C+数字',
+    name VARCHAR(100) NOT NULL UNIQUE COMMENT '公司名称',
+    company_type VARCHAR(30) DEFAULT NULL COMMENT '公司类型，如国央企、大厂、外企',
+    company_industry VARCHAR(50) DEFAULT NULL COMMENT '所属行业，如互联网、通信、能源',
+    scale VARCHAR(20) DEFAULT NULL COMMENT '公司规模，如少于50人、10000人以上',
+    website VARCHAR(255) DEFAULT NULL COMMENT '公司官网链接',
+    profile TEXT COMMENT '公司简介',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='公司信息表';
 
--- 2. 岗位分类表
-CREATE TABLE `category` (
-    `id` VARCHAR(16) NOT NULL COMMENT '分类唯一标识ID，格式如 C001A01、C001A01B01',
-    `name` VARCHAR(64) NOT NULL COMMENT '分类名称',
-    `parent_id` VARCHAR(16) NOT NULL COMMENT '父节点ID：level=1时引用company(id)，level>=2时引用category(id)（应用层保证一致性，无数据库外键）',
-    `level` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '层级等级：1=一级分类（直属公司），2=二级分类，3=三级分类',
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '记录更新时间',
-    PRIMARY KEY (`id`),
-    KEY `idx_parent_id` (`parent_id`),
-    KEY `idx_level` (`level`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位分类表';
-
--- 3. 职位信息表
-CREATE TABLE `job` (
-    `id` VARCHAR(16) NOT NULL COMMENT '职位唯一标识ID，格式如 C001J00001',
-    `company_id` VARCHAR(16) NOT NULL COMMENT '所属公司ID，外键引用company(id)',
-    `category_id` VARCHAR(16) NOT NULL COMMENT '所属分类ID，外键引用category(id)',
-    `job_url` VARCHAR(512) NOT NULL COMMENT '职位详情页原始URL',
-    `title` VARCHAR(200) NOT NULL COMMENT '职位名称',
-    `salary` VARCHAR(20) DEFAULT '面议' COMMENT '薪资范围，如10k-20k、面议',
-    `job_type` TINYINT UNSIGNED DEFAULT NULL COMMENT '招聘类型：0=社会招聘，1=校园招聘（允许为空）',
-    `education` VARCHAR(20) DEFAULT NULL COMMENT '学历要求（大专、本科、硕士等）',
-    `publish_time` DATETIME DEFAULT NULL COMMENT '职位官方发布时间',
-    `location` VARCHAR(50) DEFAULT NULL COMMENT '工作地点（城市/地区）',
-    `description` TEXT COMMENT '职位职责描述',
-    `requirement` TEXT COMMENT '职位任职要求',
-    `bonus` TEXT COMMENT '加分项（优先资格、额外要求等）',
-    `work_experience` VARCHAR(100) DEFAULT NULL COMMENT '工作经验要求（如一年以上工作经验）',
-    `is_deleted` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '待删除标记：0=正常，1=待删除',
-    `crawl_status` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '爬取状态：0=失败，1=成功',
-    `crawled_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '爬取时间/入库时间',
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '记录创建时间',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_job_url` (`job_url`),
-    KEY `idx_company_id` (`company_id`),
-    KEY `idx_category_id` (`category_id`),
-    KEY `idx_publish_time` (`publish_time`),
-    KEY `idx_location` (`location`),
-    KEY `idx_is_deleted` (`is_deleted`),
-    KEY `idx_job_type` (`job_type`),
-    KEY `idx_crawl_status` (`crawl_status`),
-    CONSTRAINT `chk_job_is_deleted` CHECK (`is_deleted` IN (0,1)),
-    CONSTRAINT `fk_job_company` FOREIGN KEY (`company_id`) REFERENCES `company` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT `fk_job_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+-- 职位表
+CREATE TABLE job (
+    id VARCHAR(16) PRIMARY KEY COMMENT '职位ID，格式：公司ID+J+编号',
+    company_id VARCHAR(16) NOT NULL COMMENT '所属公司ID，外键引用company(id)',
+    category VARCHAR(100) NOT NULL COMMENT '所属分类，如技术-技术研发',
+    job_url VARCHAR(191) NOT NULL UNIQUE COMMENT '职位详情页URL（缩短至191确保索引创建）',
+    title VARCHAR(200) NOT NULL COMMENT '职位名称',
+    salary VARCHAR(20) DEFAULT '面议' COMMENT '薪资范围',
+    job_type TINYINT UNSIGNED DEFAULT NULL COMMENT '招聘类型：0=社招，1=校招',
+    education VARCHAR(20) DEFAULT NULL COMMENT '学历要求',
+    publish_time DATETIME DEFAULT NULL COMMENT '官方发布时间',
+    location VARCHAR(50) DEFAULT NULL COMMENT '工作地点',
+    description TEXT COMMENT '职位职责描述',
+    requirement TEXT COMMENT '职位任职要求',
+    bonus TEXT COMMENT '加分项',
+    work_experience VARCHAR(100) DEFAULT NULL COMMENT '工作经验要求',
+    crawl_status TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '爬取状态：0=失败，1=成功',
+    crawled_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '爬取/入库时间',
+    is_deleted TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '软删除标记：0=正常，1=待删除',
+    FOREIGN KEY (company_id) REFERENCES company(id) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='职位信息表';
 
-use job_system;
--- 1. 修改 level 字段的默认值为 0
-ALTER TABLE `category`
-MODIFY COLUMN `level` TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '层级等级：0=一级分类（直属公司），1=二级分类，2=三级分类';
+-- 1.修改表结构，让 id 字段自增，完全交给数据库管理：
+-- 先删除原有主键约束
+ALTER TABLE job DROP PRIMARY KEY;
 
--- 2. 新增categoryid字段（可空）
-ALTER TABLE `category`
-ADD COLUMN `categoryid` INT UNSIGNED DEFAULT NULL COMMENT '官网职位分类标识ID（用于业务关联）' AFTER `level`;
+-- 修改 id 字段类型为 INT AUTO_INCREMENT
+ALTER TABLE job MODIFY id INT AUTO_INCREMENT PRIMARY KEY;
 
--- 3. 新增crawled_job_count和official_job_count字段
-USE job_system;
+-- 2.删除 crawl_status 字段，失败不入库，所以我们不再需要它：
+ALTER TABLE job DROP COLUMN crawl_status;
 
-ALTER TABLE `category`
-ADD COLUMN `crawled_job_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '爬取职位数量' AFTER `categoryid`,
-ADD COLUMN `official_job_count` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '官网职位数量' AFTER `crawled_job_count`;
+-- 3.每次更新职位信息时自动刷新 crawled_at：
+ALTER TABLE job MODIFY crawled_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- 4.添加索引以优化查询性能：
+ALTER TABLE job ADD INDEX idx_crawled_deleted (crawled_at, is_deleted);
+
+-- 5.修改 publish_time 字段为 VARCHAR 类型，保留原始文本格式：
+ALTER TABLE job
+MODIFY COLUMN publish_time VARCHAR(30) DEFAULT NULL COMMENT '官方发布时间原始文本';

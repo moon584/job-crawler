@@ -1,6 +1,5 @@
 import requests
 import time
-import json
 from db import save_to_database, search_expired_job
 from datetime import datetime
 

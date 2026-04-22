@@ -1,24 +1,10 @@
 # db.py (MySQL版本，先判断后插入或更新)
 import pymysql
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv()  # 加载 .env 文件
-
-DB_CONFIG = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME'),
-    'charset': os.getenv('DB_CHARSET', 'utf8mb4')
-}
+from db_conn import connect_db
 
 #存入数据库的函数
 def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None):
-    if db_config is None:
-        db_config = DB_CONFIG
-
+    # 如果没有传入 db_config，则在运行时建立连接
     if len(columns) != len(data_tuple):
         raise ValueError("字段数量与值数量不匹配")
 
@@ -29,7 +15,12 @@ def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None
 
     key_value = data_tuple[key_index]
 
-    conn = pymysql.connect(**db_config)
+    if db_config is None:
+        conn = connect_db()
+        if conn is None:
+            raise RuntimeError("无法建立数据库连接（请检查环境变量）")
+    else:
+        conn = pymysql.connect(**db_config)
     cursor = conn.cursor()
     try:
         # 查询是否存在

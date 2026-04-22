@@ -3,21 +3,9 @@ import requests
 import time
 import re
 from main import detail_url,extract_description_requirement
+from db_conn import connect_db
 
 #数据库没有异常缺失值，所以没有改这个文件
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv()  # 加载 .env 文件
-
-DB_CONFIG = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME'),
-    'charset': os.getenv('DB_CHARSET', 'utf8mb4')
-}
 
 def _extract_post_id(job_url):
     match = re.search(r'[?&]postId=(\d+)', job_url)
@@ -27,7 +15,12 @@ def _extract_post_id(job_url):
 def _retry_single_job(job_url, db_config=None):
     """重新爬取单个职位，更新 description, requirement, crawled_at"""
     if db_config is None:
-        db_config = DB_CONFIG
+        conn = connect_db()
+        if conn is None:
+            print("重爬时无法建立数据库连接，跳过")
+            return False
+    else:
+        conn = pymysql.connect(**db_config)
     post_id = _extract_post_id(job_url)
     if not post_id:
         return False
@@ -41,7 +34,6 @@ def _retry_single_job(job_url, db_config=None):
         print(f"重爬失败 {job_url}: {e}")
         return False
     print(f"重爬成功 {job_url}: {description}, {requirement}")
-    conn = pymysql.connect(**db_config)
     cursor = conn.cursor()
     try:
         sql = """
@@ -62,10 +54,15 @@ def rewrite_jobs(db_config=None):
     查询 job 表中 description 或 requirement 为空的职位，
     并逐个重新爬取以补全字段。
     """
+    # 根据是否传入 db_config 获取连接
     if db_config is None:
-        db_config = DB_CONFIG
+        conn = connect_db()
+        if conn is None:
+            print("无法建立数据库连接，停止重爬任务")
+            return 0
+    else:
+        conn = pymysql.connect(**db_config)
 
-    conn = pymysql.connect(**db_config)
     cursor = conn.cursor()
     try:
         # 注意字段名是 description，不是 decription

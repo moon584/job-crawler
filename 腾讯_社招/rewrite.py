@@ -4,12 +4,19 @@ import time
 import re
 from main import detail_url,extract_description_requirement
 
+#数据库没有异常缺失值，所以没有改这个文件
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # 加载 .env 文件
+
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '12345678',
-    'database': 'job_recruitment',
-    'charset': 'utf8mb4'
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'database': os.getenv('DB_NAME'),
+    'charset': os.getenv('DB_CHARSET', 'utf8mb4')
 }
 
 def _extract_post_id(job_url):

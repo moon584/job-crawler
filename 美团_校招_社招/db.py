@@ -1,14 +1,17 @@
-# db.py (MySQL版本，先判断后插入或更新)
 import pymysql
 
-DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': '12345678',
-    'database': 'job_recruitment',
-    'charset': 'utf8mb4'
-}
+from dotenv import load_dotenv
+import os
 
+load_dotenv()  # 加载 .env 文件
+
+DB_CONFIG = {
+    'host': os.getenv('DB_HOST'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'database': os.getenv('DB_NAME'),
+    'charset': os.getenv('DB_CHARSET', 'utf8mb4')
+}
 #存入数据库的函数
 def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None):
     if db_config is None:

@@ -6,13 +6,6 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
-ENV/
-env/
-
-# Environment variables and secrets
-.env
-.env.*
-*.env
 
 # Test artifacts
 .pytest_cache/
@@ -57,3 +50,5 @@ dist/
 # Claude / AI Assistants
 .claude/
 *experience*.md
+
+爬虫名单.pdf

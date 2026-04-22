@@ -15,6 +15,7 @@ venv/
 .nox/
 .coverage
 htmlcov/
+test/
 
 # IDE / tooling
 .vscode/

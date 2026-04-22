@@ -2,9 +2,29 @@
 import pymysql
 from db_conn import connect_db
 
-#存入数据库的函数
+# 说明：此模块负责把爬取到的数据写入 MySQL。实现策略为按唯一键去重：
+# - 若记录存在（按 unique_key 检查）则执行 UPDATE
+# - 否则执行 INSERT
+#
+# 设计要点：
+# - 不在模块导入时立即建立数据库连接，避免导入即抛错。
+# - 提供可选参数 db_config（字典），若传入则使用该配置连接数据库，便于测试或外部调用。
+
+
+# 存入数据库的函数
 def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None):
-    # 如果没有传入 db_config，则在运行时建立连接
+    """
+    将一条记录插入或更新到指定表。
+
+    参数说明：
+    - table_name: 表名（字符串）
+    - columns: 列名列表（按顺序，对应 data_tuple）
+    - data_tuple: 值的元组（顺序必须与 columns 对应）
+    - unique_key: 用于去重的唯一键名（例如 'job_url'）
+    - db_config: 可选的数据库连接配置字典（若不提供则使用 db_conn.connect_db() 建立连接）
+
+    行为：当 db_config=None 时，会调用 connect_db() 建立连接；若失败会抛出 RuntimeError。
+    """
     if len(columns) != len(data_tuple):
         raise ValueError("字段数量与值数量不匹配")
 
@@ -15,6 +35,7 @@ def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None
 
     key_value = data_tuple[key_index]
 
+    # 根据是否传入 db_config 获取连接
     if db_config is None:
         conn = connect_db()
         if conn is None:

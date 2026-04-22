@@ -1,12 +1,15 @@
 import requests
 import time
 import json
-from db import save_to_database
+from db import save_to_database, search_expired_job
+from datetime import datetime
 
 url = "https://careers.tencent.com/tencentcareer/api/post/Query"
 detail_url = "https://careers.tencent.com/tencentcareer/api/post/ByPostId"
 base_url = "https://careers.tencent.com/jobdesc.html"
 
+all_jobs = []
+total=0
 
 def extract_description_requirement(data):
     """腾讯社招接口：提取职位职责与任职要求。"""
@@ -39,6 +42,7 @@ def get_detail(company_id,job_type,post_id,location,job_url):
             data = {}
 
         father = data.get("CategoryName", "")  # 父类（如：技术、产品）
+        child = ""
         term = str(data.get("OuterPostTypeID", "")).strip()
 
         match term:
@@ -125,11 +129,8 @@ def get_detail(company_id,job_type,post_id,location,job_url):
 
 
 def get_joblist(company_id,job_type,page,pagesize):
-    headers = {
-        "Content-Type": "application/json"
-    }
+    global all_jobs, total
     all_jobs = []
-    crawl_ok = True
     while True:
         timestamp = int(time.time() * 1000)
         params = {
@@ -203,4 +204,10 @@ if __name__=="__main__":
     job_type = 0
     page = int(input("请输入起始页码:"))
     pagesize = int(input("请输入每页条数:"))
+
+    start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
     get_joblist(company_id,job_type,page, pagesize)
+
+    if len(all_jobs) == total:
+        search_expired_job(company_id, job_type, start_time)

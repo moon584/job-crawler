@@ -1,30 +1,28 @@
 import pymysql
 from pathlib import Path
 from pymysql.cursors import DictCursor
-
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "12345678",
-    "database": "job_recruitment",
-    "charset": "utf8mb4",
-}
+from db_conn import connect_db, get_db_config
 
 TEXT_TYPES = {"char", "varchar", "text", "tinytext", "mediumtext", "longtext"}
 
 
 def get_connection():
-    return pymysql.connect(cursorclass=DictCursor, **DB_CONFIG)
+    """
+    使用统一的 db_conn.connect_db() 建立连接。
+    返回：pymysql.Connection 或 None（失败时）。
+    """
+    conn = connect_db()
+    return conn
 
 
-def fetch_job_columns(cursor):
+def fetch_job_columns(cursor, database_name):
     sql = """
     SELECT COLUMN_NAME, DATA_TYPE
     FROM information_schema.COLUMNS
     WHERE TABLE_SCHEMA = %s AND TABLE_NAME = 'job'
     ORDER BY ORDINAL_POSITION
     """
-    cursor.execute(sql, (DB_CONFIG["database"],))
+    cursor.execute(sql, (database_name,))
     return cursor.fetchall()
 
 
@@ -54,6 +52,7 @@ def fetch_group_stats(cursor, empty_count_sql):
         CASE
             WHEN j.job_type = 0 THEN '社招'
             WHEN j.job_type = 1 THEN '校招'
+            WHEN j.job_type = 2 THEN '实习'
             ELSE '未知'
         END AS recruit_type,
         COUNT(*) AS total_jobs,
@@ -67,11 +66,12 @@ def fetch_group_stats(cursor, empty_count_sql):
         CASE
             WHEN j.job_type = 0 THEN '社招'
             WHEN j.job_type = 1 THEN '校招'
+            WHEN j.job_type = 2 THEN '实习'
             ELSE '未知'
         END
     ORDER BY
         company_name,
-        FIELD(recruit_type, '社招', '校招', '未知')
+        FIELD(recruit_type, '社招', '校招', '实习', '未知')
     """
     cursor.execute(sql)
     return cursor.fetchall()
@@ -84,7 +84,8 @@ def fetch_overview(cursor):
         SUM(CASE WHEN is_deleted = 1 THEN 1 ELSE 0 END) AS pending_delete_jobs,
         SUM(CASE WHEN job_type = 0 THEN 1 ELSE 0 END) AS total_social,
         SUM(CASE WHEN job_type = 1 THEN 1 ELSE 0 END) AS total_campus,
-        SUM(CASE WHEN job_type IS NULL OR job_type NOT IN (0, 1) THEN 1 ELSE 0 END) AS total_unknown
+        SUM(CASE WHEN job_type = 2 THEN 1 ELSE 0 END) AS total_intern,
+        SUM(CASE WHEN job_type IS NULL OR job_type NOT IN (0, 1, 2) THEN 1 ELSE 0 END) AS total_unknown
     FROM job
     """
     cursor.execute(sql)
@@ -92,7 +93,7 @@ def fetch_overview(cursor):
 
 
 def build_report_text(overview, rows, job_columns):
-    recruit_types = ["社招", "校招", "未知"]
+    recruit_types = ["社招", "校招", "实习", "未知"]
     empty_fields = [f"empty_{col['COLUMN_NAME']}" for col in job_columns]
 
     company_map = {}
@@ -105,11 +106,12 @@ def build_report_text(overview, rows, job_columns):
     lines.append("")
     lines.append("## 总览")
     lines.append("")
-    lines.append("| 总职位 | 待删除 | 社招 | 校招 | 未知 |")
-    lines.append("|:---:|:---:|:---:|:---:|:---:|")
+    # 总览表头包括：总职位、待删除、社招、校招、实习、未知
+    lines.append("| 总职位 | 待删除 | 社招 | 校招 | 实习 | 未知 |")
+    lines.append("|:---:|:---:|:---:|:---:|:---:|:---:|")
     lines.append(
         f"| {overview['total_jobs']} | {overview['pending_delete_jobs']} | "
-        f"{overview['total_social']} | {overview['total_campus']} | {overview['total_unknown']} |"
+        f"{overview['total_social']} | {overview['total_campus']} | {overview.get('total_intern', 0)} | {overview['total_unknown']} |"
     )
 
     if not rows:
@@ -125,8 +127,9 @@ def build_report_text(overview, rows, job_columns):
         lines.append("")
         lines.append(f"### {safe_company_name} ({company_id})")
         lines.append("")
-        lines.append("| 指标 | 社招 | 校招 | 未知 |")
-        lines.append("|:---:|:---:|:---:|:---:|")
+        # 每个公司也需要按社招/校招/实习/未知 四类统计
+        lines.append("| 指标 | 社招 | 校招 | 实习 | 未知 |")
+        lines.append("|:---:|:---:|:---:|:---:|:---:|")
 
         lines.append(
             "| 总职位数 | "
@@ -158,9 +161,22 @@ def main():
     conn = None
     output_path = Path(__file__).with_name("check_db_report.md")
     try:
+        # 先取配置用于查询 information_schema（若缺少会抛异常）
+        try:
+            cfg = get_db_config()
+            database_name = cfg.get("database")
+        except Exception as e:
+            print(f"读取数据库配置失败: {e}")
+            return
+
         conn = get_connection()
-        with conn.cursor() as cursor:
-            job_columns = fetch_job_columns(cursor)
+        if conn is None:
+            print("无法建立数据库连接，退出")
+            return
+
+        # 使用 DictCursor 获取字典格式结果
+        with conn.cursor(DictCursor) as cursor:
+            job_columns = fetch_job_columns(cursor, database_name)
             if not job_columns:
                 print("未找到 job 表字段，请检查数据库或表名。")
                 return

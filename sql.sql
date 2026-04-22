@@ -25,7 +25,7 @@ CREATE TABLE job (
     job_url VARCHAR(191) NOT NULL UNIQUE COMMENT '职位详情页URL（缩短至191确保索引创建）',
     title VARCHAR(200) NOT NULL COMMENT '职位名称',
     salary VARCHAR(20) DEFAULT '面议' COMMENT '薪资范围',
-    job_type TINYINT UNSIGNED DEFAULT NULL COMMENT '招聘类型：0=社招，1=校招',
+    job_type TINYINT UNSIGNED DEFAULT NULL COMMENT '招聘类型：0=社招，1=校招，2=实习',
     education VARCHAR(20) DEFAULT NULL COMMENT '学历要求',
     publish_time DATETIME DEFAULT NULL COMMENT '官方发布时间',
     location VARCHAR(50) DEFAULT NULL COMMENT '工作地点',

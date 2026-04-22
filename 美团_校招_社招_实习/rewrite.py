@@ -2,10 +2,8 @@ import pymysql
 import requests
 import time
 import re
-from main import detail_url, extract_description_requirement
+from main import detail_url,extract_description_requirement
 from db_conn import connect_db
-
-#数据库没有异常缺失值，所以没有改这个文件
 
 def _extract_post_id(job_url):
     match = re.search(r'[?&]postId=(\d+)', job_url)
@@ -13,7 +11,7 @@ def _extract_post_id(job_url):
 
 #重爬
 def _retry_single_job(job_url, db_config=None):
-    """重新爬取单个职位；若岗位已下架则标记 is_deleted=1。"""
+    """重新爬取单个职位，更新 description, requirement, crawled_at"""
     if db_config is None:
         conn = connect_db()
         if conn is None:
@@ -27,52 +25,23 @@ def _retry_single_job(job_url, db_config=None):
 
     timestamp = int(time.time() * 1000)
     try:
-        resp = requests.get(
-            f"{detail_url}?timestamp={timestamp}&postId={post_id}",
-            timeout=10
-        )
-        resp.raise_for_status()
-        body = resp.json()
+        resp = requests.get(f"{detail_url}?timestamp={timestamp}&postId={post_id}", timeout=10)
+        data = resp.json().get("data", {})
+        description,requirement= extract_description_requirement(data)
     except Exception as e:
         print(f"重爬失败 {job_url}: {e}")
         return False
-
-    status = body.get("status")
-    message = body.get("message", "")
-    data = body.get("data")
-
+    print(f"重爬成功 {job_url}: {description}, {requirement}")
     cursor = conn.cursor()
     try:
-        # 业务层返回岗位下架：直接软删除，避免后续重复重爬
-        if status == 404 and data is None:
-            sql = """
-                UPDATE job
-                SET is_deleted = 1, crawled_at = NOW()
-                WHERE job_url = %s and is_deleted = 0
-            """
-            cursor.execute(sql, (job_url,))
-            conn.commit()
-            print(f"岗位已下架，已标记删除: {job_url} ({message})")
-            return cursor.rowcount > 0
-
-        if not isinstance(data, dict):
-            data = {}
-
-        description, requirement = extract_description_requirement(data)
-
         sql = """
-            UPDATE job
-            SET description = %s, requirement = %s, is_deleted = 0, crawled_at = NOW()
+            UPDATE job 
+            SET description = %s, requirement = %s, crawled_at = NOW()
             WHERE job_url = %s
         """
         cursor.execute(sql, (description, requirement, job_url))
         conn.commit()
-        print(f"重爬成功 {job_url}: {description}, {requirement}")
         return cursor.rowcount > 0
-    except Exception as e:
-        conn.rollback()
-        print(f"写库失败 {job_url}: {e}")
-        return False
     finally:
         cursor.close()
         conn.close()
@@ -83,13 +52,15 @@ def rewrite_jobs(db_config=None):
     查询 job 表中 description 或 requirement 为空的职位，
     并逐个重新爬取以补全字段。
     """
+    # 根据是否传入 db_config 获取连接
     if db_config is None:
         conn = connect_db()
         if conn is None:
-            print("无法建立数据库连接，停止重爬任务")
-            return 0
+            print("重爬时无法建立数据库连接，跳过")
+            return False
     else:
         conn = pymysql.connect(**db_config)
+
     cursor = conn.cursor()
     try:
         # 注意字段名是 description，不是 decription

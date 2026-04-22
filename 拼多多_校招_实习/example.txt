@@ -1,0 +1,361 @@
+company_id="C008"
+职位列表页面
+请求url:https://careers.pddglobalhr.com/api/careers/api/recruit/position/list
+请求方式:POST
+请求体:{
+  "page": 1,
+  "pageSize": 10,
+  "t": null
+}
+响应json:{
+    "success": true,
+    "errorCode": 1000000,
+    "errorMsg": null,
+    "result": {
+        "list": [
+            {
+                "id": "63d58652-87d5-4010-a0e6-44f3d621f01e",
+                "name": "AI Infra研发工程师",
+                "code": "XZ0000582",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1776778998000,
+                "jobDuty": "在本岗位，您将有机会深入基础设施技术本质，同时驱动大模型与业务高效落地，具体将参与：\n1. 大模型训练与推理基础设施研发：参与构建和优化面向大规模分布式训练/推理的Infra平台，支持文本、图像、视频、语音等多模态大模型、扩散模型的训练与推理。涵盖集群资源调度、训练框架优化、高性能通信、混合精度训练、显存优化等关键环节，确保模型的训练效率与系统稳定性；\n2. 前沿Infra技术探索与创新：持续跟踪并攻关大模型基础设施领域的前沿方向（如：超大规模异构集群管理、更高效的并行策略、MoE训练/推理优化、量化与推理加速框架、多模态模型高效并行策略等），通过系统创新显著提升训练吞吐、降低推理成本、改善资源利用率；\n3. 大模型基础设施应用落地与赋能：将先进的Infra能力与公司大模型业务场景深度结合，主导技术方案的设计与实现，具体支持方向包括但不限于：\n。训练效率提升：支持Pretrain、SFT、RLHF等全流程训练任务，优化端到端训练性能；\n。推理服务优化：构建高并发、低延迟的在线推理平台，支持多模态大模型的实时服务；\n。成本与弹性优化：实现智能资源调度、Spot实例利用、自动扩缩容等，显著降低大模型训练与推理的算力成本；\n。稳定性保障：打造高可用、故障自愈的分布式训练系统，确保7×24小时稳定运行；\n4. 技术价值闭环：深度理解大模型训练与业务需求，利用平台海量算力与数据资源，推动Infra技术创新落地，并通过性能指标、成本指标、实验验证等科学方法衡量技术价值，最终为大模型研发提效、降本，并支撑业务增长。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "a3acf9a4-fe4f-4168-b799-d9431dc9fdac",
+                "name": "大模型算法工程师",
+                "code": "XZ0000580",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772974955000,
+                "jobDuty": "在本岗位，您将有机会同时深入技术本质并驱动业务落地，具体将参与：\n\n1.大模型基座研发与优化：参与构建及优化面向电商领域的多语言、多模态（图/视频/语音等）大模型基座，全流程深入数据处理、样本标注、模型预训练（Pretrain）、有监督微调（SFT）/强化学习（RL）等关键环节；\n2.前沿技术探索与创新：持续跟踪并攻关大模型领域的前沿方向 (如：Long Context、Agent-RL、更高效的训练/推理框架等），通过算法创新持续提升模型的准确性、泛化性与性能；\n3.大模型应用落地与赋能：将先进的模型能力与电商业务场景结合，主导技术方案的设计与实现，具体应用方向包括但不限于：\n• 体验革新：AI交互式搜索、生成式推荐、智能导购、智能运营助手、智能客服机器人等；\n• 内容创造：高质量多语言、多模态（文字、图片、视频等）的商品信息生成、数字人互动等；\n• 效率提升：漏斗效率优化、实时翻译、智能代码助手等；\n4.技术价值闭环：深度理解业务场景，利用平台丰富的数据资源，推动技术创新落地，并通过AB实验等科学方法验证技术价值，最终提升用户、商家体验和商业效益。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "f98f5602-bee7-4a9a-abdb-d62eb186f132",
+                "name": "商家运营（多语种优势-上海）",
+                "code": "XZ0000551",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "language",
+                "jobName": "语言",
+                "releaseTime": 1772973451000,
+                "jobDuty": "1、参与或主导负责品类商家的引入、管理、考核、服务工作，帮助优质商家快速落地和发展，指导商家合规经营，扩大业务规模，持续优化商品品质，提升消费者购物体验； \n2、分析洞察行业趋势、行业资讯，并进行趋势分析，了解消费者喜好，对产品设计、选款提出开发指引，不断优化产品； \n3、根据业务需要，挖掘品类潜力，扩充品类商家，提升商品丰富度； \n4、参与品牌合作方日常对接，包括商品规划、品牌营销、运营策略等。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "管培生"
+            },
+            {
+                "id": "83a87a13-034e-40b6-aa87-438c2a900a6b",
+                "name": "用户体验运营管培（多语种优势-上海）",
+                "code": "XZ0000552",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "investment",
+                "jobName": "运营",
+                "releaseTime": 1772973432000,
+                "jobDuty": "围绕提升用户体验和满意度、进而提升用户忠诚度为目标，可以根据个人兴趣爱好和匹配度，提供以下2种发展方向和培养路径：\n1）语言类：基于扎实的语言能力，管理各国家供应商，通过制定和推动业务流程落地、管理项目进度、协调跨团队资源，来完成服务的稳定输出和质量的提升；\n2）数据分析类：通过数据分析，优化接待流程，找到客服各业务线的效率提升点，设计用户特征和接待资源的最优匹配方案。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "管培生"
+            },
+            {
+                "id": "e8db1c03-080e-4466-8812-9c50dbd01699",
+                "name": "法务助理（上海）",
+                "code": "XZ0000541",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "general",
+                "jobName": "职能",
+                "releaseTime": 1772973412000,
+                "jobDuty": "1、协助处理与业务相关的全球合规和争议解决；\n2、协助处理监管调查和其他监管合规事务；\n3、协助起草、审阅和修订合同，提供风险评估，并提供法律咨询以支持业务增长；\n4、协助执行上级指派的其他任务。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "管培生"
+            },
+            {
+                "id": "fd43a77c-95f7-4b74-a806-a22806d82a55",
+                "name": "平台运营策略",
+                "code": "XZ0000581",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "product",
+                "jobName": "产品",
+                "releaseTime": 1776002404000,
+                "jobDuty": "1、快速学习平台相关规则，深入了解商品生命周期，为业务发展提出可行的建议方案；\n2、通过大量的数据分析，清晰拆解和定义问题，推动业务优化和增长；\n3、与公司各团队共同协作，协调多方资源，推动复杂策略项目落地。",
+                "labelList": [],
+                "recruitTypeName": "管培生"
+            },
+            {
+                "id": "bf8cded7-0efa-491f-97fa-dc0dfce2709d",
+                "name": "HR培训生（区域业务）",
+                "code": "XZ0000567",
+                "workLocation": "全国多省区",
+                "workLocationName": "全国多省区",
+                "job": "vegetable",
+                "jobName": "区域业务",
+                "releaseTime": 1774503494000,
+                "jobDuty": "1、全面学习人力资源管理工作流程，紧跟公司工作发展需求;\n2、参与管理培训生培养，通过实践熟悉人力资源不同模块的工作;\n3、分析岗位需求，完成招聘交付计划，满足业务对人员的需求，包括但不限于人才库维护、简历搜索、面试组织、候选人入职落地跟进、各项招聘活动的组织执行、招聘数据的统计及分析等;\n4、与相关业务部门保持有效的日常沟通，提供有效帮助;\n5、协助支持人力资源各专项任务，以及其他工作事宜。",
+                "labelList": [],
+                "recruitTypeName": "区域业务管培生"
+            },
+            {
+                "id": "743547e0-c1e2-45e1-9903-24ed3e9f23bb",
+                "name": "运营管培生（区域业务）",
+                "code": "XZ0000564",
+                "workLocation": "全国多省区",
+                "workLocationName": "全国多省区",
+                "job": "vegetable",
+                "jobName": "区域业务",
+                "releaseTime": 1773022375000,
+                "jobDuty": "方向1：招商运营\n1、负责供应商资源开发及管理：收集和分析供应商信息及市场趋势，落实供应商开发和供应商过程控制管理工作并制定有效的运营策略，建立稳定的商品渠道;\n2、负责公司平台的商品活动策划及效果评估分析;\n3、收集市场和公司热销商品相关数据信息，并制定运营策略。\n方向2：社群团长运营\n1、开拓区域市场，对团长社群、当地用户社群的用户增长、活跃负责;\n2、对负责区域进行业务推广，产品、服务优势介绍及引导活动推广、获客、用户新增，完成业绩指标;\n3、管理社群并及时运营维护，收集团长及用户反馈，为运营效果、产品改进提供建议;\n4、负责引导团长进行系统功能操作，解答团长问题，并根据每日商品情况做文案与推送；\n5、根据团长、用户、供应链等多处信息策划促销激励活动，激励团长、用户下单，达成gmv指标。\n方向3：卖场运营\n1、负责区域卖场的规则建设和运营工作，优化卖场商品结构、展现逻辑和运营策略，达成业绩指标；\n2、负责用户数据的分析和优化，负责日常以及大促期间流量的综合使用效率，以及频道内资源运营和流量分发；\n3、区域目标拆解以及日常经营分析，在运营过程中输出自己的洞察，提出问题点优化空间，在运营过程中不断迭代、提升运营效率。",
+                "labelList": [],
+                "recruitTypeName": "区域业务管培生"
+            },
+            {
+                "id": "b69cc309-6a69-4ca3-99ca-a2f3c16088fc",
+                "name": "质控管培生（区域业务）",
+                "code": "XZ0000566",
+                "workLocation": "河南/湖南",
+                "workLocationName": "河南/湖南",
+                "job": "vegetable",
+                "jobName": "区域业务",
+                "releaseTime": 1773022365000,
+                "jobDuty": "1、参与物流中台日常运营，协助监控系统运行状态，保障稳定性与效率；\n2、通过数据分析发现流程瓶颈，提出优化方案并推动落地；\n3、协同产品、技术团队，参与中台工具/功能迭代测试与推广；\n4、支持业务部门使用中台系统，沉淀运营方法论与标准化文档。",
+                "labelList": [],
+                "recruitTypeName": "区域业务管培生"
+            },
+            {
+                "id": "be55ffef-319b-42d7-84c5-7c0208573cf8",
+                "name": "仓配物流管培生（区域业务）",
+                "code": "XZ0000565",
+                "workLocation": "全国多省区",
+                "workLocationName": "全国多省区",
+                "job": "vegetable",
+                "jobName": "区域业务",
+                "releaseTime": 1773022335000,
+                "jobDuty": "方向1：仓储运营\n1、管理商品仓储作业全链路模块，包括收货、分栋、出库等，确保流程的顺畅以及良好的时效；\n2.、通过对货物差异率等数据分析与问题挖掘，提升仓储及物流运营质量，降低运营成本;\n3、管理库存商品并做好商品的质量安全管理工作，根据商品进销存进行数据分析，提高库存管理效率;\n4、负责电商仓库日常管理工作，合理安排库内人员的各项工作，确保各项流程正常进行。\n方向2：物流&网格站运营\n1、依据用户需求，制定物流相关的流程、标准及推广计划以及配送网络的建立，并进行监控与优化；\n2、负责区域内仓配合作服务商（网格站）的开发、管理及监管，制定网点标准化管理规定，优化相关外包服务流程。",
+                "labelList": [],
+                "recruitTypeName": "区域业务管培生"
+            }
+        ],
+        "total": "27"
+    }
+}
+
+job_url=https://careers.pddglobalhr.com/campus/grad/detail?positionId=63d58652-87d5-4010-a0e6-44f3d621f01e
+
+职位详情页面
+请求url:https://careers.pddglobalhr.com/api/careers/api/recruit/position/detail
+请求方式:POST
+请求体:{
+  "id": "63d58652-87d5-4010-a0e6-44f3d621f01e",
+  "t": null
+}
+响应json:{
+    "success": true,
+    "errorCode": 1000000,
+    "errorMsg": null,
+    "result": {
+        "id": "63d58652-87d5-4010-a0e6-44f3d621f01e",
+        "name": "AI Infra研发工程师",
+        "workLocationName": "上海",
+        "job": "technology",
+        "jobName": "技术",
+        "releaseTime": 1776778998000,
+        "serveRequirement": "1. 教育背景：2025.9-2026.8期间已获得或即将获得博士/硕士学位的同学，计算机科学、软件工程、电子信息、自动化等相关专业优先；\n2. 技术根基：\n。具备扎实的计算机系统基础（操作系统、计算机网络、分布式系统、编译原理等），出色的编程能力和工程实现能力（熟练掌握C/C++、Python，熟悉Go/Rust者优先）\n。深入理解大规模分布式系统原理，熟悉至少一种主流大模型训练/推理框架（PyTorch、Megatron、DeepSpeed、vLLM、TVM等）\n。有GPU/异构集群相关经验者优先，熟悉RDMA、NVLink、InfiniBand等高性能网络者优先\n3. 创新与问题解决能力：具备极强的学习能力、主动性和系统性思维，能够独立分析和解决复杂工程与性能问题，对将系统优化技术应用于大模型场景充满热情\n4. 成果导向：在学术或工业项目中有突出表现者优先，例如但不限于：\n。在系统/架构相关顶级会议/期刊发表过论文\n。在ACM/ICPC、知名编程或系统竞赛中获奖\n。主导或深度参与过高性能计算、分布式系统、大模型训练平台等具有较大技术影响力的项目",
+        "jobDuty": "在本岗位，您将有机会深入基础设施技术本质，同时驱动大模型与业务高效落地，具体将参与：\n1. 大模型训练与推理基础设施研发：参与构建和优化面向大规模分布式训练/推理的Infra平台，支持文本、图像、视频、语音等多模态大模型、扩散模型的训练与推理。涵盖集群资源调度、训练框架优化、高性能通信、混合精度训练、显存优化等关键环节，确保模型的训练效率与系统稳定性；\n2. 前沿Infra技术探索与创新：持续跟踪并攻关大模型基础设施领域的前沿方向（如：超大规模异构集群管理、更高效的并行策略、MoE训练/推理优化、量化与推理加速框架、多模态模型高效并行策略等），通过系统创新显著提升训练吞吐、降低推理成本、改善资源利用率；\n3. 大模型基础设施应用落地与赋能：将先进的Infra能力与公司大模型业务场景深度结合，主导技术方案的设计与实现，具体支持方向包括但不限于：\n。训练效率提升：支持Pretrain、SFT、RLHF等全流程训练任务，优化端到端训练性能；\n。推理服务优化：构建高并发、低延迟的在线推理平台，支持多模态大模型的实时服务；\n。成本与弹性优化：实现智能资源调度、Spot实例利用、自动扩缩容等，显著降低大模型训练与推理的算力成本；\n。稳定性保障：打造高可用、故障自愈的分布式训练系统，确保7×24小时稳定运行；\n4. 技术价值闭环：深度理解大模型训练与业务需求，利用平台海量算力与数据资源，推动Infra技术创新落地，并通过性能指标、成本指标、实验验证等科学方法衡量技术价值，最终为大模型研发提效、降本，并支撑业务增长。",
+        "bonus": "",
+        "batchId": "b33576d8-c99f-4716-ba47-fa02cd939080",
+        "isVote": true,
+        "voteArrange": "inTime",
+        "e": true,
+        "a": false,
+        "recruitType": "headquarters",
+        "recruitTypeName": "技术专场",
+        "b": false,
+        "c": false,
+        "nationalDistribute": false,
+        "d": [
+            "a"
+        ],
+        "positionDirectionList": null,
+        "campusPositionDirectionListVOS": [],
+        "qrCode": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwCAIAAABJgmMcAAACj0lEQVR42u3aWXYCMQwFUfa/6c4CSNJtvZIHKH9CIPaFIzT49crW9fd6/5snjwy94ftT1A7LGi9BBT0E9BpZFFYNokYz9FT5vwsq6HGgTw5JHfvJIYcCHP4lGNUQVNAvAR16VS28UukOlUgJKug3g+LFD3VaPP0SVNAPA11SmdQCbrj5M0pPQQXtAQ37oR/2yPoGs6CC9oBe9ApTGSpFm5Bj/b5/QQXdGzSMmHgnpW8/Nf3RT1pQQU8BrcWacJd4LF4eggUV9BTQCaedOb8ME5pyS0VQQU8Brc0mqW5jOBDta460pE2CCroBKBWG8O3inc3al6DlR0lQQdeBUrcQ8LsLuBpVRD39URJU0ENAa3EkD0PsbYa+Ou1mjCyooIeAUg0LqkCaML8EDyiooMeBhmGxb+qJR0xqP4IKehAoVQWFI1J8G8sqJUEF3Rs0vEJ0ZQsfQPbNZoYrJUEF3RKUusRQHhMmtUrfDsvvLKigm4PilQkVxcIEaMLUc/hHSVBBNwANa4OwNUndeJhZp/3/hoIKujloeICwtKA+jwlXo8ipp6CC7gQapjJDr8LHLfhcdvSdBRX0XFA8NwqvEE0IguESVNATQcNomBcbSUcGH21OqpQEFXQdaC1fCfsUVIEURvA8UxRU0I8EpSaRFGjf9YiW0lNQQbcE7WtP4D3TJa+6OaOggm4JiscRvFahWipU1nXjIKige4PmHUC2bxLemqJyvnKcFVTQU0DDA1DHnjBTCRusT/cmqKCHgFLRB88tqBgKzjgfNUcEFfTLQKlGZG2GQbVmNoqhggq6JWjfvvtuM9QyqkkxVFBBe0BnNiPWPtUxshVU0FNA8bljX2ETZkLhlY7ZDWZBBUVBLxe6fgAez1+x7qHHIQAAAABJRU5ErkJggg==",
+        "shareUrl": "https://careers.pddglobalhr.com/campus/grad/detail?positionId=63d58652-87d5-4010-a0e6-44f3d621f01e",
+        "normal": true
+    }
+}
+
+职位详情页面
+请求url:https://careers.pddglobalhr.com/api/careers/api/recruit/position/train/list
+请求方法:POST
+请求体:{
+  "page": 1,
+  "pageSize": 10,
+  "t": null
+}
+响应json:{
+    "success": true,
+    "errorCode": 1000000,
+    "errorMsg": null,
+    "result": {
+        "list": [
+            {
+                "id": "d3ea8bf2-e257-46d4-9d8a-298cc72b019b",
+                "name": "AI Infra研发实习生",
+                "code": "XZ0000583",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1776778983000,
+                "jobDuty": "在本岗位，您将有机会深入基础设施技术本质，同时驱动大模型与业务高效落地，具体将参与：\n1. 大模型训练与推理基础设施研发：参与构建和优化面向大规模分布式训练/推理的Infra平台，支持文本、图像、视频、语音等多模态大模型、扩散模型的训练与推理。涵盖集群资源调度、训练框架优化、高性能通信、混合精度训练、显存优化等关键环节，确保模型的训练效率与系统稳定性。\n2. 前沿Infra技术探索与创新：持续跟踪并攻关大模型基础设施领域的前沿方向（如：超大规模异构集群管理、更高效的并行策略、MoE训练/推理优化、量化与推理加速框架、多模态模型高效并行策略等），通过系统创新显著提升训练吞吐、降低推理成本、改善资源利用率。\n3. 大模型基础设施应用落地与赋能：将先进的Infra能力与公司大模型业务场景深度结合，主导技术方案的设计与实现，具体支持方向包括但不限于：\n。训练效率提升：支持Pretrain、SFT、RLHF等全流程训练任务，优化端到端训练性能；\n。推理服务优化：构建高并发、低延迟的在线推理平台，支持多模态大模型的实时服务；\n。成本与弹性优化：实现智能资源调度、Spot实例利用、自动扩缩容等，显著降低大模型训练与推理的算力成本；\n。稳定性保障：打造高可用、故障自愈的分布式训练系统，确保7×24小时稳定运行；\n4. 技术价值闭环：深度理解大模型训练与业务需求，利用平台海量算力与数据资源，推动Infra技术创新落地，并通过性能指标、成本指标、实验验证等科学方法衡量技术价值，最终为大模型研发提效、降本，并支撑业务增长。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "899256d5-e11c-4249-9625-0bfc03263ead",
+                "name": "大模型算法实习生",
+                "code": "XZ0000573",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772540651000,
+                "jobDuty": "1.大模型基座研发与优化：参与多语言、多模态、AIGC等基座大模型的训练和优化，深入数据处理、Pre-training、Post-training等各个关键环节；\n2.前沿技术探索：持续跟踪并攻关大模型领域的前沿方向 ，通过算法创新持续提升模型的准确性、泛化性与性能；\n3.电商场景赋能：将先进的模型能力与电商业务场景结合，转化为实际生产力。",
+                "labelList": [
+                    "紧缺"
+                ],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "9b7a2544-8afc-4be6-ac65-52bca027bebd",
+                "name": "服务端研发实习生",
+                "code": "XZ0000568",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772540642000,
+                "jobDuty": "1.负责基础和业务的架构设计和研发工作，解决各类有技术挑战的问题，为产品和业务的发展提供最强有力的技术支撑；\n2.按照软件开发流程，根据产品和项目计划，完成所负责模块的架构设计、编码、测试和文档编写的全流程工作;\n3.持续优化系统架构，提高系统在高并发、高流量和分布式环境下的容灾容错能力，保证系统的高可用性、高可靠性和高扩展性;\n4.承担新技术预研和方案选型，参与关键技术点的攻坚工作，帮助团队内的技术推广。",
+                "labelList": [],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "c6c27f0d-b122-45b2-bc75-443483fea3b8",
+                "name": "算法实习生",
+                "code": "XZ0000570",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772540633000,
+                "jobDuty": "1.利用机器学习/深度学习技术/图计算技术，优化app搜索、推荐、广告、图像、风控、智能客服、平台等效果，提升数亿用户的购物体验和平台的变现效率;\n2.深入产品和业务，发现算法和机制中的不足，提出改进方案并且推动实现;\n3.跟踪业界和学术界最新进展，将理论成果应用到业务场景，提升业务效果。",
+                "labelList": [],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "093ddc5f-6a57-437d-83ee-fe7a84a1a848",
+                "name": "客户端研发实习生",
+                "code": "XZ0000569",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772540621000,
+                "jobDuty": "1.参与客户端日常需求分析和功能开发，优化客户端的用户体验；\n2.参与客户端整体的架构设计、运行期性能优化，设计动态化可扩展组件，提升整体研发质量和效率;\n3.参与跨平台网络中间件、H5容器、Native容器的开发。",
+                "labelList": [],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "92293e99-ed07-4eb5-b9c9-62bcf856f3d8",
+                "name": "web前端研发实习生",
+                "code": "XZ0000571",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772540608000,
+                "jobDuty": "1.参与客户端内H5/微信H5/PC端Web/微信小程序的日常需求分析和功能开发，优化用户体验;\n2.与上下游团队密切配合，分析并给出最优的前端技术解决方案和效果实现;\n3.熟悉并参与团队的前端基础技术工作建设，优化用户体验，提升研发质量和效率。",
+                "labelList": [],
+                "recruitTypeName": "技术专场"
+            },
+            {
+                "id": "c5fde32e-8c7d-4292-930c-cae367127fea",
+                "name": "安全实习生",
+                "code": "XZ0000572",
+                "workLocation": "上海",
+                "workLocationName": "上海",
+                "job": "technology",
+                "jobName": "技术",
+                "releaseTime": 1772540586000,
+                "jobDuty": "1.持续推进公司安全体系建设，切实提升公司应用系统安全能力；\n2.设计并开发大规模高可用的安全应用、组件和系统，防止公司内主机遭受病毒、木马等攻击，避免通过网络攻击公司应用系统等；\n3.制定公司安全开发流程，并落地实施。按需针对内部架构实施安全评审，指导架构的安全优化;\n4.针对公司内部系统实施周期性的渗透测试、红蓝演练等工作，及时发现内部系统安全问题并推动整改;\n5.紧随各类前沿技术研究、情报等，及时预警当前体系的各种问题并推动整改；\n6.其他安全研究相关工作，包括但不限于：密码学研究，Web、二进制、移动系统的相关安全技术研究。",
+                "labelList": [],
+                "recruitTypeName": "技术专场"
+            }
+        ],
+        "total": "7"
+    }
+}
+
+job_url:https://careers.pddglobalhr.com/campus/intern/detail?positionId=d3ea8bf2-e257-46d4-9d8a-298cc72b019b
+职位详情页面
+请求url:https://careers.pddglobalhr.com/api/careers/api/recruit/position/detail
+请求方式:POST
+请求体:{
+  "id": "d3ea8bf2-e257-46d4-9d8a-298cc72b019b",
+  "t": null
+}
+响应json:{
+    "success": true,
+    "errorCode": 1000000,
+    "errorMsg": null,
+    "result": {
+        "id": "d3ea8bf2-e257-46d4-9d8a-298cc72b019b",
+        "name": "AI Infra研发实习生",
+        "workLocationName": "上海",
+        "job": "technology",
+        "jobName": "技术",
+        "releaseTime": 1776778983000,
+        "serveRequirement": "1. 教育背景：2026.9-2027.8期间已获得或即将获得博士/硕士学位的同学，计算机科学、软件工程、电子信息、自动化等相关专业优先。\n2. 技术根基：\n。具备扎实的计算机系统基础（操作系统、计算机网络、分布式系统、编译原理等），出色的编程能力和工程实现能力（熟练掌握C/C++、Python，熟悉Go/Rust者优先）\n。深入理解大规模分布式系统原理，熟悉至少一种主流大模型训练/推理框架（PyTorch、Megatron、DeepSpeed、vLLM、TVM等）\n。有GPU/异构集群相关经验者优先，熟悉RDMA、NVLink、InfiniBand等高性能网络者优先\n3. 创新与问题解决能力：具备极强的学习能力、主动性和系统性思维，能够独立分析和解决复杂工程与性能问题，对将系统优化技术应用于大模型场景充满热情。\n4. 成果导向：在学术或工业项目中有突出表现者优先，例如但不限于：\n。在系统/架构相关顶级会议/期刊发表过论文\n。在ACM/ICPC、知名编程或系统竞赛中获奖\n。主导或深度参与过高性能计算、分布式系统、大模型训练平台等具有较大技术影响力的项目",
+        "jobDuty": "在本岗位，您将有机会深入基础设施技术本质，同时驱动大模型与业务高效落地，具体将参与：\n1. 大模型训练与推理基础设施研发：参与构建和优化面向大规模分布式训练/推理的Infra平台，支持文本、图像、视频、语音等多模态大模型、扩散模型的训练与推理。涵盖集群资源调度、训练框架优化、高性能通信、混合精度训练、显存优化等关键环节，确保模型的训练效率与系统稳定性。\n2. 前沿Infra技术探索与创新：持续跟踪并攻关大模型基础设施领域的前沿方向（如：超大规模异构集群管理、更高效的并行策略、MoE训练/推理优化、量化与推理加速框架、多模态模型高效并行策略等），通过系统创新显著提升训练吞吐、降低推理成本、改善资源利用率。\n3. 大模型基础设施应用落地与赋能：将先进的Infra能力与公司大模型业务场景深度结合，主导技术方案的设计与实现，具体支持方向包括但不限于：\n。训练效率提升：支持Pretrain、SFT、RLHF等全流程训练任务，优化端到端训练性能；\n。推理服务优化：构建高并发、低延迟的在线推理平台，支持多模态大模型的实时服务；\n。成本与弹性优化：实现智能资源调度、Spot实例利用、自动扩缩容等，显著降低大模型训练与推理的算力成本；\n。稳定性保障：打造高可用、故障自愈的分布式训练系统，确保7×24小时稳定运行；\n4. 技术价值闭环：深度理解大模型训练与业务需求，利用平台海量算力与数据资源，推动Infra技术创新落地，并通过性能指标、成本指标、实验验证等科学方法衡量技术价值，最终为大模型研发提效、降本，并支撑业务增长。",
+        "bonus": "",
+        "batchId": "321a94c4-82fa-4cbe-8fec-177179b26f3b",
+        "isVote": true,
+        "voteArrange": "inTime",
+        "e": true,
+        "a": false,
+        "recruitType": "headquarters",
+        "recruitTypeName": "技术专场",
+        "b": false,
+        "c": false,
+        "nationalDistribute": false,
+        "d": [
+            "a"
+        ],
+        "positionDirectionList": null,
+        "campusPositionDirectionListVOS": [],
+        "qrCode": "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABwCAIAAABJgmMcAAACjUlEQVR42u3aW5KDMAwFUfa/aWYBQ1Kg23KspP2ZCQQfqjR6+Diydb5e/7/z6Krw8vPGevMTZY1DUEGHgJ5P1p3dhnt7tO1QrfbMl1cJKug40DsRE38Nj0BrNOEnN39LUEF/BPTRVTUjKgHC7yOooD8IuqCeCQNu34sRVNDRoHgCtOBPtVc+o/QUVNAe0LAf+mWffL7BLKigPaAnvWpZTliV4Q9W376ggu4NGkbMleGV2iE10bm8oaCCbg5KtTD6njLstIbDlachWFBBvxIU74eGTc/aqakww7tujggq6DRQqkOKv6G+Q07UyQlBBZ0ISvGFRQtVelHxEfinJKigO4HiFUUo+9lkq3z6SlBBNwcNZw/hrLTWYMVFaunX3TGyoILuBEoNBWtlzMqp55oyT1BBp4CGaUqoFqZW1Fw2P9clqKDjQKm2I96wwBOp3tJTUEG3BMXTHfzMwYKODHjiQVBBx4H2nR4oB6am8BpG+eu0SVBBh4DiZUxfQRLemUr17jaYBRV0b9C+pmfYrKQ6IFTP9PHUU1BBp4FSjvhuw7qIiteCCjoRtG/KiFcmC05FPN2XoIJOAcXPAIWOfcRH2xJU0EGg+Ogi7y2yHRk8sbtbKQkq6JagtSIhPMRA1SorxyTvH0NQQceB1gIc3pUIw3RfvVevlAQVdG/QsMKhaieq8UH96PsNCiro5qB9I4e+SWT4E/iRDkEFHQSadwC7qxdwt0jBVu+HCiroTqDho4RNxvB9UHxhcSiooBNBqVyEkl1ww94xsqCCfjVo2CENk6Sw5Zrnc4IK+mugK4emYY5VS/6AMbKggu4EGlYdYd6zoLeCT0YFFXQi6Gf7odSXFwTcGQ1mQQV9AXq60PUHPYBSsBag7pUAAAAASUVORK5CYII=",
+        "shareUrl": "https://careers.pddglobalhr.com/campus/intern/detail?positionId=d3ea8bf2-e257-46d4-9d8a-298cc72b019b",
+        "normal": true
+    }
+}
+

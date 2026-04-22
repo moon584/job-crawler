@@ -2,11 +2,9 @@
 import pymysql
 from db_conn import connect_db
 
-# 不在模块导入时立即建立数据库配置或连接。
-# 在需要执行数据库操作时，应调用 connect_db() 获取连接。
-
 #存入数据库的函数
 def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None):
+    # 如果没有传入 db_config，则在运行时建立连接
     if len(columns) != len(data_tuple):
         raise ValueError("字段数量与值数量不匹配")
 
@@ -17,7 +15,6 @@ def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None
 
     key_value = data_tuple[key_index]
 
-    # 根据是否传入 db_config 获取连接
     if db_config is None:
         conn = connect_db()
         if conn is None:
@@ -55,3 +52,50 @@ def save_to_database(table_name, columns, data_tuple, unique_key, db_config=None
         cursor.close()
         conn.close()
     #print(f"数据: {data_tuple}")
+
+
+def search_expired_job(company_id, job_type, start_time, db_config=None):
+    """
+    软删除过期的职位记录，并返回被删除的数量。
+
+    """
+    conn = None
+    try:
+        # 建立连接
+        if db_config is None:
+            conn = connect_db()
+            if conn is None:
+                raise RuntimeError("无法建立数据库连接（请检查环境变量）")
+        else:
+            conn = pymysql.connect(**db_config)
+
+        cursor = conn.cursor()
+
+        # 执行软删除
+        update_sql = """
+                     UPDATE `job`
+                     SET `is_deleted` = 1
+                     WHERE `company_id` = %s
+                       AND `job_type` = %s
+                       AND `crawled_at` < %s
+                       AND `is_deleted` = 0 
+                     """
+        cursor.execute(update_sql, (company_id, job_type, start_time))
+
+        # 获取受影响的行数
+        deleted_count = cursor.rowcount
+
+        # 提交事务
+        conn.commit()
+
+        # 输出删除数量（可根据需求改为 logging 或直接返回）
+        print(f"已软删除 {deleted_count} 条过期职位记录")
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"软删除失败: {e}")
+        raise
+    finally:
+        if conn:
+            conn.close()

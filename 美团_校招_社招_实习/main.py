@@ -1,14 +1,19 @@
 import requests
 import time
 import json
-from db import save_to_database
+from db import save_to_database, search_expired_job
+from datetime import datetime
 
+company_id = "C007"
 url = "https://zhaopin.meituan.com/api/official/job/getJobList"
 detail_url = "https://zhaopin.meituan.com/api/official/job/getJobDetail"
 base_url = "https://zhaopin.meituan.com/web/position/detail"
 headers = {
         "Content-Type": "application/json"
     }
+
+all_jobs = []
+total=0
 
 def extract_description_requirement(data):
     """提取职位描述与要求，优先使用常规字段，空值时回退。"""
@@ -38,7 +43,7 @@ def extract_description_requirement(data):
 
     return description, requirement
 
-def get_detail(company_id,job_type,post_id,location,job_url):
+def get_detail(job_type,post_id,location,job_url):
     payload={
         "jobUnionId": post_id,
         "jobShareType": "1"
@@ -80,8 +85,8 @@ def get_detail(company_id,job_type,post_id,location,job_url):
     )
     return True
 
-def get_joblist(company_id, job_type, page, pagesize, job_type_match, job_type_str):
-    all_jobs = []
+def get_joblist(job_type, page, pagesize, job_type_match, job_type_str):
+    global all_jobs, total
     while True:
         payload = {
                 "page": {
@@ -110,7 +115,6 @@ def get_joblist(company_id, job_type, page, pagesize, job_type_match, job_type_s
             data = resp.json()
         except Exception as e:
             print(f"职位列表抓取失败 page={page}: {e}")
-            crawl_ok = False
             break
 
         if not isinstance(data, dict):
@@ -157,7 +161,7 @@ def get_joblist(company_id, job_type, page, pagesize, job_type_match, job_type_s
                 location = city_list
 
             job_url = f"{base_url}?jobUnionId={post_id}&highlightType={job_type_str}"
-            get_detail(company_id,job_type,post_id,location,job_url)
+            get_detail(job_type,post_id,location,job_url)
 
         if not jobs:
             print("本页无数据，停止")
@@ -177,17 +181,30 @@ def get_joblist(company_id, job_type, page, pagesize, job_type_match, job_type_s
     print(f"最终共获取 {len(all_jobs)} 个职位")
 
 if __name__=="__main__":
-    company_id = "C007"
-    job_type = int(input("请输入招聘类型(0=社招，1=校招): "))
     page = int(input("请输入起始页码:"))
     pagesize = int(input("请输入每页条数:"))
-    if job_type == "1":
-        job_type_match=[
-                    {"code": "1", "subCode": []},
-                    {"code": "2", "subCode": []}
-        ]
-        job_type_str= "campus"
-    else:
-        job_type_match=[{"code": "3", "subCode": []}]
-        job_type_str= "social"
-    get_joblist(company_id,job_type,page, pagesize,job_type_match,job_type_str)
+    while True:
+        job_type = int(input("请输入招聘类型(0=社招，1=校招，2=实习): "))
+        if job_type == 0:
+            job_type_match=[{"code": "3", "subCode": []},]
+            job_type_str= "social"
+            break
+        elif job_type == 1:
+            job_type_match=[{"code": "1", "subCode": []}]
+            job_type_str= "campus"
+            break
+        elif job_type == 2:
+            job_type_match=[{"code": "2", "subCode": []}]
+            job_type_str= "campus"
+            break
+        else:
+            print("输入错误，请重新输入")
+
+    start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    get_joblist(job_type,page, pagesize,job_type_match,job_type_str)
+
+    if len(all_jobs) == total:
+        search_expired_job(company_id, job_type, start_time)
+
+

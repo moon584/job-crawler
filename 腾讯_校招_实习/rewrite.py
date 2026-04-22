@@ -2,16 +2,39 @@ import pymysql
 import requests
 import time
 import re
-from main import detail_url,extract_description_requirement
+from main import detail_url, extract_description_requirement
 from db_conn import connect_db
 
+# ----------------------------------------------------------------------------
+# 说明：用于补爬 `job` 表中缺失 `description` 或 `requirement` 的记录。
+# - `rewrite_jobs` 会扫描数据库中 description/requirement 为空的 job_url 列表，
+#   然后调用 `_retry_single_job` 逐条重新请求详情并回写数据库。
+# 实习软删除功能
+# - `_retry_single_job` 在无法连接数据库时会返回 False 并打印提示。
+# ----------------------------------------------------------------------------
+
 def _extract_post_id(job_url):
+    """
+    从 job_url 中提取 postId 参数的数字值，返回字符串或者 None。
+    例如：`https://.../post_detail.html?postId=12345` -> 返回 '12345'
+    """
     match = re.search(r'[?&]postId=(\d+)', job_url)
     return match.group(1) if match else None
 
 #重爬
 def _retry_single_job(job_url, db_config=None):
-    """重新爬取单个职位；若岗位已下架则标记 is_deleted=1。"""
+    """
+    重新爬取并更新单个职位的 description 与 requirement。
+
+    参数：
+    - job_url: 职位详情页面的 URL
+    - db_config: 可选数据库配置字典；若为 None 则使用 db_conn.connect_db() 建立连接
+
+    行为：
+    - 若页面返回 status == 404 且 data 为 None，则将该职位标记为 is_deleted=1
+    - 否则提取 description/requirement 并写回数据库
+    - 返回 True 表示写库成功并影响行数 > 0，返回 False 表示失败
+    """
     if db_config is None:
         conn = connect_db()
         if conn is None:
@@ -88,7 +111,6 @@ def rewrite_jobs(db_config=None):
             return False
     else:
         conn = pymysql.connect(**db_config)
-
     cursor = conn.cursor()
     try:
         # 注意字段名是 description，不是 decription

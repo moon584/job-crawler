@@ -1,210 +1,153 @@
-import requests
-import time
-import json
-from db import save_to_database, search_expired_job
-from datetime import datetime
+"""
+美团招聘爬虫
+支持社招(job_type=0)、校招(job_type=1)、实习(job_type=2)
+"""
+from global_main import fetch_with_retry, run_crawler, safe_get
+from global_db import save_to_database
 
-company_id = "C007"
-url = "https://zhaopin.meituan.com/api/official/job/getJobList"
-detail_url = "https://zhaopin.meituan.com/api/official/job/getJobDetail"
-base_url = "https://zhaopin.meituan.com/web/position/detail"
-headers = {
-        "Content-Type": "application/json"
+# ---------- 配置 ----------
+COMPANY_ID = "C007"
+LIST_API = "https://zhaopin.meituan.com/api/official/job/getJobList"
+DETAIL_API = "https://zhaopin.meituan.com/api/official/job/getJobDetail"
+BASE_URL = "https://zhaopin.meituan.com/web/position/detail"
+HEADERS = {"Content-Type": "application/json"}
+REQUEST_TIMEOUT = 10
+RETRY_TIMES = 2
+
+# 类型映射：用户输入 -> 接口参数 & URL后缀
+JOB_TYPE_MAP = {
+    0: {"jobType": [{"code": "3", "subCode": []}], "url_suffix": "social"},
+    1: {"jobType": [{"code": "1", "subCode": []}], "url_suffix": "campus"},
+    2: {"jobType": [{"code": "2", "subCode": []}], "url_suffix": "campus"},
+}
+
+
+# ---------- 标准接口函数 ----------
+def get_job_type() -> int:
+    """让用户选择招聘类型，返回 0/1/2"""
+    while True:
+        try:
+            choice = int(input("请输入招聘类型（0=社招，1=校招，2=实习）: "))
+            if choice in (0, 1, 2):
+                return choice
+            print("请输入 0、1 或 2")
+        except ValueError:
+            print("输入无效，请输入数字 0、1 或 2")
+
+
+def fetch_list_page(page: int, page_size: int, job_type: int):
+    """
+    获取列表页数据
+    返回: (jobs_list, total_count)
+    """
+    type_cfg = JOB_TYPE_MAP.get(job_type)
+    if not type_cfg:
+        print(f"无效的 job_type: {job_type}")
+        return [], 0
+
+    payload = {
+        "page": {"pageNo": page, "pageSize": page_size},
+        "jobShareType": "1",
+        "keywords": "",
+        "cityList": [],
+        "department": [],
+        "jfJgList": [],
+        "jobType": type_cfg["jobType"],
+        "typeCode": [],
+        "specialCode": [],
+        "u_query_id": "",
+        "r_query_id": ""
     }
 
-all_jobs = []
-total=0
+    resp = fetch_with_retry("POST", LIST_API, json=payload, headers=HEADERS,
+                            timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
+    if not resp:
+        return [], 0
 
-def extract_description_requirement(data):
-    """提取职位描述与要求，优先使用常规字段，空值时回退。"""
+    data_obj = resp.get("data") or {}
+    jobs = data_obj.get("list", [])
+    page_info = data_obj.get("page") or {}
+    total = page_info.get("totalCount", 0)
+    try:
+        total = int(total)
+    except (TypeError, ValueError):
+        total = 0
+    return jobs, total
+
+
+def process_job(job: dict, job_type: int) -> bool:
+    """处理单个职位：获取详情并入库，返回是否成功"""
+    post_id = job.get("jobUnionId")
+    if not post_id:
+        print("跳过无效职位：jobUnionId 为空")
+        return False
+
+    # 提取 location
+    city_list = job.get("cityList")
+    location = ""
+    if isinstance(city_list, list) and city_list:
+        first = city_list[0]
+        if isinstance(first, dict):
+            location = first.get("name") or ""
+        elif isinstance(first, str):
+            location = first
+    elif isinstance(city_list, str):
+        location = city_list
+
+    url_suffix = JOB_TYPE_MAP[job_type]["url_suffix"]
+    job_url = f"{BASE_URL}?jobUnionId={post_id}&highlightType={url_suffix}"
+
+    # 请求详情
+    detail_payload = {"jobUnionId": post_id, "jobShareType": "1"}
+    detail_json = fetch_with_retry("POST", DETAIL_API, json=detail_payload, headers=HEADERS,
+                                   timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
+    if not detail_json:
+        print(f"详情请求失败: {job_url}")
+        return False
+
+    data = detail_json.get("data") or {}
+    father = data.get("jobFamily", "")
+    child = data.get("jobFamilyGroup", "")
+    category = f"{father}-{child}" if father or child else "未分类"
+    title = data.get("name", "") or "无标题"
     description = (data.get("jobDuty") or "").strip()
     requirement = (data.get("jobRequirement") or "").strip()
+    bonus = data.get("precedence", "")
+    work_experience = data.get("workYear") or ""
 
-    if not description:
-        description = (data.get("topicDetail") or "").strip()
-        if not description:
-            # subDirectionDtos 是一个列表，取第一个元素中的 subDirection 字典
-            dtos = data.get("subDirectionDtos")
-            if isinstance(dtos, list) and dtos:
-                first_dto = dtos[0]
-                sub_dir = first_dto.get("subDirection") if isinstance(first_dto, dict) else None
-                if isinstance(sub_dir, dict):
-                    description = sub_dir.get("desc", "").strip()
+    # 以下字段 API 未提供
+    salary = None
+    education = None
+    publish_time = None
 
-    if not requirement:
-        requirement = (data.get("topicRequirement") or "").strip()
-        if not requirement:
-            dtos = data.get("subDirectionDtos")
-            if isinstance(dtos, list) and dtos:
-                first_dto = dtos[0]
-                sub_dir = first_dto.get("subDirection") if isinstance(first_dto, dict) else None
-                if isinstance(sub_dir, dict):
-                    requirement = sub_dir.get("request", "").strip()
-
-    return description, requirement
-
-def get_detail(job_type,post_id,location,job_url):
-    payload={
-        "jobUnionId": post_id,
-        "jobShareType": "1"
-    }
     try:
-        resp = requests.post(
-            detail_url,
-            json=payload,
-            headers=headers,
-            timeout=10
+        save_to_database(
+            status=0,
+            table_name="job",
+            columns=["company_id", "job_type", "job_url", "post_id", "title",
+                     "category", "description", "requirement", "bonus",
+                     "location", "salary", "education", "publish_time", "work_experience"],
+            data_tuple=(COMPANY_ID, job_type, job_url, post_id, title,
+                        category, description, requirement, bonus,
+                        location, salary, education, publish_time, work_experience),
+            unique_key="job_url"
         )
-        resp.raise_for_status()
-        body = resp.json()
-        data = body.get("data") or {}
-        if not isinstance(data, dict):
-            data = {}
-
-        father = data.get("jobFamily", "")
-        child = data.get("jobFamilyGroup", "")
-        category = f"{father}-{child}"
-        title = data.get("name", "")
-        description, requirement = extract_description_requirement(data)
-        bonus = data.get("precedence", "")
-
-        salary = ""
-        education = ""
-        publish_time = ""
-        work_experience = data.get("workYear") or ""
-
+        return True
     except Exception as e:
-        print(f"爬取失败 job_url={job_url}: {e}")
-        return False  # 不保存失败记录
+        print(f"写库失败 {job_url}: {e}")
+        return False
 
-    save_to_database(
-        table_name="job",
-        columns=["company_id","job_type","title", "category", "description", "requirement", "bonus","location","job_url","work_experience"],
-        data_tuple=(company_id, job_type,title, category, description, requirement, bonus,location, job_url, work_experience),
-        unique_key="job_url"
+
+# ---------- 入口 ----------
+def main():
+    run_crawler(
+        company_id=COMPANY_ID,
+        get_job_type_func=get_job_type,
+        fetch_list_page_func=fetch_list_page,
+        process_job_func=process_job,
+        base_delay=1.0
     )
-    return True
-
-def get_joblist(job_type, page, pagesize, job_type_match, job_type_str):
-    global all_jobs, total
-    while True:
-        payload = {
-                "page": {
-                    "pageNo": page,
-                    "pageSize": pagesize
-                },
-                "jobShareType": "1",
-                "keywords": "",
-                "cityList": [],
-                "department": [],
-                "jfJgList": [],
-                "jobType": job_type_match,
-                "typeCode": [],
-                "specialCode": [],
-                "u_query_id": "",
-                "r_query_id": ""
-            }
-        try:
-            resp = requests.post(
-                url,
-                json=payload,
-                headers=headers,
-                timeout=10
-            )
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as e:
-            print(f"职位列表抓取失败 page={page}: {e}")
-            break
-
-        if not isinstance(data, dict):
-            data = {}
-
-        # 调试输出（可选）
-        #print(json.dumps(data, indent=4, ensure_ascii=False))
-
-        # ✅ 修改1：正确提取职位列表和总数
-        data_obj = data.get("data") or {}
-        if not isinstance(data_obj, dict):
-            data_obj = {}
-        jobs = data_obj.get("list", [])
-        if not isinstance(jobs, list):
-            jobs = []
-
-        page_info = data_obj.get("page")
-        if not isinstance(page_info, dict):
-            page_info = {}
-        total = page_info.get("totalCount", 0)
-
-        if not isinstance(total, int):
-            try:
-                total = int(total)
-            except (TypeError, ValueError):
-                total = 0
-
-        for job in jobs:
-            post_id = job.get("jobUnionId")
-            if not post_id:
-                print("跳过无效职位：post_id 为空")
-                continue
-
-            city_list = job.get("cityList")
-            location = ""
-
-            if isinstance(city_list, list) and city_list:
-                first = city_list[0]
-                if isinstance(first, dict):
-                        location = first.get("name") or ""
-                elif isinstance(first, str):
-                        location = first
-            elif isinstance(city_list, str):
-                location = city_list
-
-            job_url = f"{base_url}?jobUnionId={post_id}&highlightType={job_type_str}"
-            get_detail(job_type,post_id,location,job_url)
-
-        if not jobs:
-            print("本页无数据，停止")
-            break
-
-        all_jobs.extend(jobs)
-        print(f"已获取第 {page} 页，本页 {len(jobs)} 条，累计 {len(all_jobs)} / {total} 条")
-
-        # ✅ 修改2：根据总数判断是否完成
-        if page * pagesize >= total:
-            print("已获取全部职位")
-            break
-
-        page += 1
-        time.sleep(0.5)
-
-    print(f"最终共获取 {len(all_jobs)} 个职位")
-
-if __name__=="__main__":
-    page = int(input("请输入起始页码:"))
-    pagesize = int(input("请输入每页条数:"))
-    while True:
-        job_type = int(input("请输入招聘类型(0=社招，1=校招，2=实习): "))
-        if job_type == 0:
-            job_type_match=[{"code": "3", "subCode": []},]
-            job_type_str= "social"
-            break
-        elif job_type == 1:
-            job_type_match=[{"code": "1", "subCode": []}]
-            job_type_str= "campus"
-            break
-        elif job_type == 2:
-            job_type_match=[{"code": "2", "subCode": []}]
-            job_type_str= "campus"
-            break
-        else:
-            print("输入错误，请重新输入")
-
-    start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    get_joblist(job_type,page, pagesize,job_type_match,job_type_str)
-
-    if len(all_jobs) == total:
-        search_expired_job(company_id, job_type, start_time)
 
 
+if __name__ == "__main__":
+    main()

@@ -58,3 +58,8 @@ ALTER TABLE job ADD INDEX idx_crawled_deleted (crawled_at, is_deleted);
 -- 5.修改 publish_time 字段为 VARCHAR 类型，保留原始文本格式：
 ALTER TABLE job
 MODIFY COLUMN publish_time VARCHAR(30) DEFAULT NULL COMMENT '官方发布时间原始文本';
+
+-- 6.新增 post_id 字段
+ALTER TABLE job
+ADD COLUMN post_id VARCHAR(50) DEFAULT NULL COMMENT '官网职位编号'
+AFTER job_url;

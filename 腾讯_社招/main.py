@@ -1,212 +1,136 @@
-import requests
+"""
+腾讯官方招聘爬虫（careers.tencent.com）
+固定抓取社招职位
+"""
+
 import time
-from db import save_to_database, search_expired_job
-from datetime import datetime
+from global_main import fetch_with_retry, run_crawler
+from global_db import save_to_database
 
-url = "https://careers.tencent.com/tencentcareer/api/post/Query"
-detail_url = "https://careers.tencent.com/tencentcareer/api/post/ByPostId"
-base_url = "https://careers.tencent.com/jobdesc.html"
+# ---------- 配置 ----------
+COMPANY_ID = "C001"
+LIST_API = "https://careers.tencent.com/tencentcareer/api/post/Query"
+DETAIL_API = "https://careers.tencent.com/tencentcareer/api/post/ByPostId"
+BASE_URL = "https://careers.tencent.com/jobdesc.html"
+REQUEST_TIMEOUT = 10
+RETRY_TIMES = 2
 
-all_jobs = []
-total=0
 
-def extract_description_requirement(data):
-    """腾讯社招接口：提取职位职责与任职要求。"""
+# ---------- 辅助函数 ----------
+def extract_description_requirement(data: dict):
     description = (data.get("Responsibility") or "").strip()
     requirement = (data.get("Requirement") or "").strip()
     return description, requirement
 
 
-def get_detail(company_id,job_type,post_id,location,job_url):
+def get_category_from_term(term: str, father: str) -> str:
+    term_map = {
+        "40001001": "技术研发", "40001002": "质量管理", "40001003": "技术运营",
+        "40001004": "安全技术", "40001005": "AI、算法与大数据", "40001006": "企管",
+        "40002001": "产品", "40002002": "游戏产品", "40002003": "项目", "40002004": "金融",
+        "40003001": "设计", "40003002": "游戏美术",
+        "40004": "营销与公关",
+        "40005001": "销售", "40005002": "客服",
+        "40006": "内容", "40007": "财务", "40008": "人力资源",
+        "40009": "法律与公共策略", "40010": "行政支持", "40011": "战略与投资",
+    }
+    child = term_map.get(str(term), "")
+    if father and child:
+        return f"{father}-{child}"
+    return father or child or "未分类"
+
+
+# ---------- 标准接口函数 ----------
+def get_job_type() -> int:
+    """此接口仅社招，固定返回 0"""
+    return 0
+
+
+def fetch_list_page(page: int, page_size: int, job_type: int):
+    """获取列表页"""
     timestamp = int(time.time() * 1000)
+    params = {
+        "timestamp": timestamp, "countryId": "", "cityId": "", "bgIds": "",
+        "productId": "", "categoryId": "", "parentCategoryId": "", "attrId": 1,
+        "keyword": "", "pageIndex": page, "pageSize": page_size,
+        "language": "zh-cn", "area": "cn",
+    }
+    resp = fetch_with_retry("GET", LIST_API, params=params,
+                            timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
+    if not resp:
+        return [], 0
+    data_obj = resp.get("Data") or {}
+    jobs = data_obj.get("Posts", [])
+    total = data_obj.get("Count", 0)
     try:
-        resp = requests.get(
-            detail_url,
-            params={
-                "timestamp": timestamp,
-                "postId": post_id,
-                "language": "zh-cn"
-            },
-            timeout=10
+        total = int(total)
+    except (TypeError, ValueError):
+        total = 0
+    return jobs, total
+
+
+def process_job(job: dict, job_type: int) -> bool:
+    """处理单个职位：获取详情并入库"""
+    post_id = job.get("PostId")
+    if not post_id:
+        return False
+
+    # 构建列表页提供的 URL（备用）
+    job_url = job.get("PostURL") or f"{BASE_URL}?postId={post_id}"
+    location = job.get("LocationName", "")
+
+    # 请求详情
+    timestamp = int(time.time() * 1000)
+    params = {"timestamp": timestamp, "postId": post_id, "language": "zh-cn"}
+    detail_json = fetch_with_retry("GET", DETAIL_API, params=params,
+                                   timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
+    if not detail_json or detail_json.get("Code") != 200:
+        print(f"详情请求失败: {job_url}")
+        return False
+
+    data = detail_json.get("Data") or {}
+    father = data.get("CategoryName", "")
+    term = data.get("OuterPostTypeID", "")
+    category = get_category_from_term(term, father)
+    title = data.get("RecruitPostName", "") or "无标题"
+    description, requirement = extract_description_requirement(data)
+    bonus = data.get("ImportantItem", "")
+    work_experience = data.get("RequireWorkYearsName", "")
+    publish_time = data.get("LastUpdateTime", "")
+    # 优先使用详情返回的 URL
+    final_job_url = data.get("PostURL") or job_url
+
+    salary = None
+    education = None
+
+    try:
+        save_to_database(
+            status=0,
+            table_name="job",
+            columns=["company_id", "job_type", "job_url", "post_id", "title",
+                     "category", "description", "requirement", "bonus",
+                     "location", "salary", "education", "publish_time", "work_experience"],
+            data_tuple=(COMPANY_ID, job_type, final_job_url, post_id, title,
+                        category, description, requirement, bonus,
+                        location, salary, education, publish_time, work_experience),
+            unique_key="job_url"
         )
-        resp.raise_for_status()
-        body = resp.json()
-
-        if body.get("Code") != 200:
-            print(f"详情接口业务失败 job_url={job_url}, Code={body.get('Code')}")
-            return False
-
-        data = body.get("Data") or {}
-        if not isinstance(data, dict):
-            data = {}
-
-        father = data.get("CategoryName", "")  # 父类（如：技术、产品）
-        child = ""
-        term = str(data.get("OuterPostTypeID", "")).strip()
-
-        match term:
-            # 技术
-            case "40001001":
-                child = "技术研发"
-            case "40001002":
-                child = "质量管理"
-            case "40001003":
-                child = "技术运营"
-            case "40001004":
-                child = "安全技术"
-            case "40001005":
-                child = "AI、算法与大数据"
-            case "40001006":
-                child = "企管"
-
-            # 产品
-            case "40002001":
-                child = "产品"
-            case "40002002":
-                child = "游戏产品"
-            case "40002003":
-                child="项目"
-            case "40002004":
-                child="金融"
-
-            # 设计
-            case "40003001":
-                child = "设计"
-            case "40003002":
-                child = "游戏美术"
-
-            # 营销与公关
-            case "40004":
-                child = "营销与公关"
-
-            # 销售、服务与支持
-            case "40005001":
-                child = "销售"
-            case "40005002":
-                child = "客服"
-            # 无子类
-            case "40006":
-                child = "内容"
-            case "40007":
-                child = "财务"
-            case "40008":
-                child = "人力资源"
-            case "40009":
-                child = "法律与公共策略"
-            case "40010":
-                child = "行政支持"
-            case "40011":
-                child = "战略与投资"
-            case _:
-                child = ""
-
-        category = f"{father}-{child}" if father and child else (father or child)
-
-        title = data.get("RecruitPostName", "")
-        description, requirement = extract_description_requirement(data)
-        bonus = data.get("ImportantItem", "")
-        work_experience=data.get("RequireWorkYearsName", "")
-        # 详情接口优先使用返回的标准职位链接
-        job_url = data.get("PostURL") or job_url
-        publish_time = data.get("LastUpdateTime", "")
-
-        salary = ""
-        education = ""
-
-
+        return True
     except Exception as e:
-        print(f"爬取失败 job_url={job_url}: {e}")
-        return False  # 不保存失败记录
+        print(f"写库失败 {final_job_url}: {e}")
+        return False
 
-    save_to_database(
-        table_name="job",
-        columns=["company_id","job_type","title", "category", "description", "requirement", "bonus","location","job_url","work_experience","publish_time"],
-        data_tuple=(company_id, job_type,title, category, description, requirement, bonus,location, job_url, work_experience, publish_time),
-        unique_key="job_url"
+
+# ---------- 入口 ----------
+def main():
+    run_crawler(
+        company_id=COMPANY_ID,
+        get_job_type_func=get_job_type,
+        fetch_list_page_func=fetch_list_page,
+        process_job_func=process_job,
+        base_delay=1.0
     )
-    return True
 
 
-def get_joblist(company_id,job_type,page,pagesize):
-    global all_jobs, total
-    all_jobs = []
-    while True:
-        timestamp = int(time.time() * 1000)
-        params = {
-            "timestamp": timestamp,
-            "countryId": "",
-            "cityId": "",
-            "bgIds": "",
-            "productId": "",
-            "categoryId": "",
-            "parentCategoryId": "",
-            "attrId": 1,
-            "keyword": "",
-            "pageIndex": page,
-            "pageSize": pagesize,
-            "language": "zh-cn",
-            "area": "cn",
-        }
-        try:
-            resp = requests.get(
-                url,
-                params=params,
-                timeout=10
-            )
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as e:
-            print(f"职位列表抓取失败 page={page}: {e}")
-            break
-
-        if not isinstance(data, dict):
-            data = {}
-
-        # 调试输出（可选）
-        #print(json.dumps(data, indent=4, ensure_ascii=False))
-
-        data_obj = data.get("Data") or {}
-        if not isinstance(data_obj, dict):
-            data_obj = {}
-        jobs = data_obj.get("Posts", [])
-        total = data_obj.get("Count", 0)
-
-        for job in jobs:
-            post_id = job.get("PostId")
-            if not post_id:
-                print("跳过无效职位：PostId 为空")
-                continue
-            location = job.get("LocationName", "")
-            job_url = job.get("PostURL") or f"{base_url}?postId={post_id}"
-            get_detail(company_id,job_type,post_id,location,job_url)
-
-        if not jobs:
-            print("本页无数据，停止")
-            break
-
-        all_jobs.extend(jobs)
-        print(f"已获取第 {page} 页，本页 {len(jobs)} 条，累计 {len(all_jobs)} / {total} 条")
-
-        # ✅ 修改2：根据总数判断是否完成
-        if page * pagesize >= total:
-            print("已获取全部职位")
-            break
-
-        page += 1
-        time.sleep(0.5)
-
-    print(f"最终共获取 {len(all_jobs)} 个职位")
-
-
-if __name__=="__main__":
-    company_id = "C001"
-    job_type = 0
-    page = int(input("请输入起始页码:"))
-    pagesize = int(input("请输入每页条数:"))
-
-    start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    get_joblist(company_id,job_type,page, pagesize)
-
-    if len(all_jobs) == total:
-        search_expired_job(company_id, job_type, start_time)
+if __name__ == "__main__":
+    main()

@@ -40,7 +40,65 @@ def get_category_from_term(term: str, father: str) -> str:
     return father or child or "未分类"
 
 
-# ---------- 标准接口函数 ----------
+# ---------- 核心函数：独立详情获取（供 rewrite.py 直接调用）----------
+def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallback_job: dict = None) -> bool:
+    """
+    获取职位详情并入库
+    :param post_id:       职位ID (PostId)
+    :param location:      工作地点（可能为空）
+    :param job_url:       职位详情页 URL（列表页提供的，可能被详情接口返回的替换）
+    :param job_type:      招聘类型（此接口固定为 0）
+    :param fallback_job:  可选的列表数据字典，用于回填 location 等字段（本接口暂不需要）
+    :return:              是否成功入库
+    """
+    # 请求详情
+    timestamp = int(time.time() * 1000)
+    params = {"timestamp": timestamp, "postId": post_id, "language": "zh-cn"}
+    detail_json = fetch_with_retry("GET", DETAIL_API, params=params,
+                                   timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
+    if not detail_json or detail_json.get("Code") != 200:
+        print(f"详情请求失败: {job_url}")
+        return False
+
+    data = detail_json.get("Data") or {}
+    father = data.get("CategoryName", "")
+    term = data.get("OuterPostTypeID", "")
+    category = get_category_from_term(term, father)
+    title = data.get("RecruitPostName", "") or "无标题"
+    description, requirement = extract_description_requirement(data)
+    bonus = data.get("ImportantItem", "")
+    work_experience = data.get("RequireWorkYearsName", "")
+    publish_time = data.get("LastUpdateTime", "")
+    # 优先使用详情返回的 URL
+    final_job_url = data.get("PostURL") or job_url
+
+    # 如果详情中没有 location，且传入了 fallback_job，尝试从中获取
+    final_location = location
+    if not final_location and fallback_job:
+        final_location = fallback_job.get("LocationName", "")
+
+    salary = None
+    education = None
+
+    try:
+        save_to_database(
+            status=0,
+            table_name="job",
+            columns=["company_id", "job_type", "job_url", "post_id", "title",
+                     "category", "description", "requirement", "bonus",
+                     "location", "salary", "education", "publish_time", "work_experience"],
+            data_tuple=(COMPANY_ID, job_type, final_job_url, post_id, title,
+                        category, description, requirement, bonus,
+                        final_location, salary, education, publish_time, work_experience),
+            unique_key="job_url"
+        )
+        return True
+    except Exception as e:
+        print(f"写库失败 {final_job_url}: {e}")
+        return False
+
+
+# ---------- 标准接口函数（供 run_crawler 使用）----------
 def get_job_type() -> int:
     """此接口仅社招，固定返回 0"""
     return 0
@@ -70,55 +128,17 @@ def fetch_list_page(page: int, page_size: int, job_type: int):
 
 
 def process_job(job: dict, job_type: int) -> bool:
-    """处理单个职位：获取详情并入库"""
+    """处理单个职位：调用 get_detail 入库"""
     post_id = job.get("PostId")
     if not post_id:
         return False
 
-    # 构建列表页提供的 URL（备用）
+    # 从列表数据中提取字段
     job_url = job.get("PostURL") or f"{BASE_URL}?postId={post_id}"
     location = job.get("LocationName", "")
 
-    # 请求详情
-    timestamp = int(time.time() * 1000)
-    params = {"timestamp": timestamp, "postId": post_id, "language": "zh-cn"}
-    detail_json = fetch_with_retry("GET", DETAIL_API, params=params,
-                                   timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
-    if not detail_json or detail_json.get("Code") != 200:
-        print(f"详情请求失败: {job_url}")
-        return False
-
-    data = detail_json.get("Data") or {}
-    father = data.get("CategoryName", "")
-    term = data.get("OuterPostTypeID", "")
-    category = get_category_from_term(term, father)
-    title = data.get("RecruitPostName", "") or "无标题"
-    description, requirement = extract_description_requirement(data)
-    bonus = data.get("ImportantItem", "")
-    work_experience = data.get("RequireWorkYearsName", "")
-    publish_time = data.get("LastUpdateTime", "")
-    # 优先使用详情返回的 URL
-    final_job_url = data.get("PostURL") or job_url
-
-    salary = None
-    education = None
-
-    try:
-        save_to_database(
-            status=0,
-            table_name="job",
-            columns=["company_id", "job_type", "job_url", "post_id", "title",
-                     "category", "description", "requirement", "bonus",
-                     "location", "salary", "education", "publish_time", "work_experience"],
-            data_tuple=(COMPANY_ID, job_type, final_job_url, post_id, title,
-                        category, description, requirement, bonus,
-                        location, salary, education, publish_time, work_experience),
-            unique_key="job_url"
-        )
-        return True
-    except Exception as e:
-        print(f"写库失败 {final_job_url}: {e}")
-        return False
+    # 调用独立 get_detail，传入列表数据作为 fallback
+    return get_detail(str(post_id), location, job_url, job_type, fallback_job=job)
 
 
 # ---------- 入口 ----------

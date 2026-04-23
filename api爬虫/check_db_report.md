@@ -18,8 +18,9 @@
 | company_id 空值 | 0 | 0 | 0 | 0 |
 | category 空值 | 0 | 0 | 0 | 0 |
 | job_url 空值 | 0 | 0 | 0 | 0 |
+| post_id 空值 | 0 | 7 | 0 | 0 |
 | title 空值 | 0 | 0 | 0 | 0 |
-| salary 空值 | 0 | 0 | 0 | 0 |
+| salary 空值 | 0 | 20 | 7 | 0 |
 | job_type 空值 | 0 | 0 | 0 | 0 |
 | education 空值 | 0 | 27 | 7 | 0 |
 | publish_time 空值 | 0 | 27 | 7 | 0 |
@@ -41,6 +42,7 @@
 | company_id 空值 | 0 | 0 | 0 | 0 |
 | category 空值 | 0 | 0 | 0 | 0 |
 | job_url 空值 | 0 | 0 | 0 | 0 |
+| post_id 空值 | 3375 | 159 | 574 | 0 |
 | title 空值 | 0 | 0 | 0 | 0 |
 | salary 空值 | 0 | 0 | 0 | 0 |
 | job_type 空值 | 0 | 0 | 0 | 0 |
@@ -64,7 +66,8 @@
 | company_id 空值 | 0 | 0 | 0 | 0 |
 | category 空值 | 17 | 0 | 0 | 0 |
 | job_url 空值 | 0 | 0 | 0 | 0 |
-| title 空值 | 0 | 23 | 114 | 0 |
+| post_id 空值 | 2596 | 37 | 724 | 0 |
+| title 空值 | 0 | 23 | 45 | 0 |
 | salary 空值 | 0 | 0 | 0 | 0 |
 | job_type 空值 | 0 | 0 | 0 | 0 |
 | education 空值 | 2596 | 37 | 724 | 0 |

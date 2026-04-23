@@ -64,20 +64,16 @@ def crawl_job_list_generic(
     fetch_list_page_func: Callable[[int, int, int], Tuple[list, int]],
     process_job_func: Callable[[dict, int], bool],
     base_delay: float = 1.0
-) -> Tuple[int, int]:
+) -> Tuple[int, int, bool]:
     """
     通用分页爬取逻辑
-    :param job_type:            招聘类型（由各爬虫定义）
-    :param start_page:          起始页码
-    :param page_size:           每页条数
-    :param fetch_list_page_func: 函数 (page, page_size, job_type) -> (jobs_list, total_count)
-    :param process_job_func:     函数 (job_item, job_type) -> bool（是否成功入库）
-    :param base_delay:           基础延迟秒数
-    :return: (成功保存数, 总记录数)
+    :return: (成功保存数, 实际抓取到的职位总数, 是否完整爬完所有页)
     """
     current_page = start_page
-    total_count = 0
+    total_count = 0          # 接口返回的总记录数（仅用于分页判断）
     success_count = 0
+    fetched_total = 0        # 实际从列表页获取的职位总数
+    completed = False
 
     while True:
         jobs, total_count = fetch_list_page_func(current_page, page_size, job_type)
@@ -85,6 +81,7 @@ def crawl_job_list_generic(
             print(f"第 {current_page} 页无数据，停止")
             break
 
+        fetched_total += len(jobs)
         for job in jobs:
             if process_job_func(job, job_type):
                 success_count += 1
@@ -92,14 +89,14 @@ def crawl_job_list_generic(
         print(f"已获取第 {current_page} 页，本页 {len(jobs)} 条，累计成功 {success_count} / {total_count} 条")
 
         if current_page * page_size >= total_count:
+            completed = True
             print("已到达最后一页")
             break
 
         current_page += 1
         random_delay(base=base_delay, extra=1.5)
 
-    return success_count, total_count
-
+    return success_count, fetched_total, completed
 
 def run_crawler(
     company_id: str,
@@ -108,26 +105,18 @@ def run_crawler(
     process_job_func: Callable[[dict, int], bool],
     base_delay: float = 1.0
 ) -> None:
-    """
-    标准爬虫入口，包含用户输入、分页爬取、过期检查
-    :param company_id:           公司ID（用于过期检查）
-    :param get_job_type_func:    无参函数，返回 job_type
-    :param fetch_list_page_func: 同 crawl_job_list_generic
-    :param process_job_func:     同 crawl_job_list_generic
-    :param base_delay:           基础延迟秒数
-    """
     start_page, page_size = get_user_pagination()
     job_type = get_job_type_func()
     start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    saved, total = crawl_job_list_generic(
+    saved, fetched_total, completed = crawl_job_list_generic(
         job_type, start_page, page_size,
         fetch_list_page_func, process_job_func,
         base_delay
     )
 
-    print(f"抓取完成，成功保存 {saved} 个职位，总记录数 {total}")
-    if saved == total and total > 0:
+    print(f"抓取完成，成功保存 {saved} 个职位，共抓取 {fetched_total} 个职位")
+    if completed and fetched_total > 0:
         search_expired_job(company_id, job_type, start_time)
     else:
         print("未完整抓取全量数据，跳过过期检查")

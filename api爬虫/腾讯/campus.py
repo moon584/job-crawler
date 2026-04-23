@@ -123,6 +123,7 @@ def main():
     current_page = start_page
     total_count = 0
     success_count = 0
+    completed = False
 
     while True:
         jobs, total_count = fetch_list_page(current_page, page_size, 0)
@@ -133,16 +134,14 @@ def main():
                 success_count += 1
         print(f"已获取第 {current_page} 页，本页 {len(jobs)} 条，累计成功 {success_count} / {total_count} 条")
         if current_page * page_size >= total_count:
+            completed = True
             break
         current_page += 1
         random_delay(base=1.0, extra=1.5)
 
     print(f"抓取完成，成功保存 {success_count} 个职位，总记录数 {total_count}")
-    # 注意：这里 job_type 传 1 表示校招，实际过期检查会同时处理校招和实习？最好分开，但简单处理可以传 1
-    if success_count == total_count and total_count > 0:
+    if completed and total_count > 0:
         search_expired_job(COMPANY_ID, 1, start_time)
-    else:
-        print("未完整抓取全量数据，跳过过期检查")
 
 
 if __name__ == "__main__":

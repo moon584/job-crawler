@@ -69,8 +69,6 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
     bonus = data.get("ImportantItem", "")
     work_experience = data.get("RequireWorkYearsName", "")
     publish_time = data.get("LastUpdateTime", "")
-    # 优先使用详情返回的 URL
-    final_job_url = data.get("PostURL") or job_url
 
     # 如果详情中没有 location，且传入了 fallback_job，尝试从中获取
     final_location = location
@@ -79,22 +77,23 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
 
     salary = None
     education = None
+    status=0
 
     try:
         save_to_database(
-            status=0,
+            status=status,
             table_name="job",
             columns=["company_id", "job_type", "job_url", "post_id", "title",
                      "category", "description", "requirement", "bonus",
                      "location", "salary", "education", "publish_time", "work_experience"],
-            data_tuple=(COMPANY_ID, job_type, final_job_url, post_id, title,
+            data_tuple=(COMPANY_ID, job_type, job_url, post_id, title,
                         category, description, requirement, bonus,
                         final_location, salary, education, publish_time, work_experience),
             unique_key="job_url"
         )
         return True
     except Exception as e:
-        print(f"写库失败 {final_job_url}: {e}")
+        print(f"写库失败 {job_url}: {e}")
         return False
 
 

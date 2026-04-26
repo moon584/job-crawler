@@ -56,6 +56,19 @@ def random_delay(base: float = 1.0, extra: float = 1.5) -> None:
     time.sleep(random.uniform(base, base + extra))
 
 
+def get_max_items() -> int:
+    """获取用户输入的最大爬取条数，0 表示不限制。"""
+    try:
+        raw = input("请输入最大爬取条数（回车=全部，输入数字=仅爬N条）: ") or "0"
+        val = int(raw)
+        if val < 0:
+            raise ValueError
+        return val
+    except ValueError:
+        print("输入无效，将爬取全部数据")
+        return 0
+
+
 # ---------- 新增通用爬虫流程 ----------
 def crawl_job_list_generic(
     job_type: int,
@@ -63,14 +76,16 @@ def crawl_job_list_generic(
     page_size: int,
     fetch_list_page_func: Callable[[int, int, int], Tuple[list, int]],
     process_job_func: Callable[[dict, int], bool],
-    base_delay: float = 1.0
+    base_delay: float = 1.0,
+    max_items: int = 0
 ) -> Tuple[int, int, bool]:
     """
     通用分页爬取逻辑
+    :param max_items: 最多爬取条数，0=不限制
     :return: (成功保存数, 实际抓取到的职位总数, 是否完整爬完所有页)
     """
     current_page = start_page
-    total_count = 0          # 接口返回的总记录数（仅用于分页判断）
+    total_count = 0          # 接口返回的总记录数
     success_count = 0
     fetched_total = 0        # 实际从列表页获取的职位总数
     completed = False
@@ -87,6 +102,10 @@ def crawl_job_list_generic(
                 success_count += 1
 
         print(f"已获取第 {current_page} 页，本页 {len(jobs)} 条，累计成功 {success_count} / {total_count} 条")
+
+        if max_items > 0 and success_count >= max_items:
+            print(f"已达到最大爬取条数限制（{max_items}条），停止")
+            break
 
         if current_page * page_size >= total_count:
             completed = True
@@ -107,12 +126,13 @@ def run_crawler(
 ) -> None:
     start_page, page_size = get_user_pagination()
     job_type = get_job_type_func()
+    max_items = get_max_items()
     start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     saved, fetched_total, completed = crawl_job_list_generic(
         job_type, start_page, page_size,
         fetch_list_page_func, process_job_func,
-        base_delay
+        base_delay, max_items
     )
 
     print(f"抓取完成，成功保存 {saved} 个职位，共抓取 {fetched_total} 个职位")

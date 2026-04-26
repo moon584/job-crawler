@@ -1,0 +1,794 @@
+company_id=C002
+职位列表
+请求url:https://campus-talent.alibaba.com/position/search?_csrf=3b7d85ef-d2a4-4920-85f3-82e76b8f4bfd
+请求方法：post
+请求体:{"batchId":100000540002,"pageIndex":1,"pageSize":10,"channel":"campus_group_official_site","language":"zh"}
+响应json:{
+    "success": true,
+    "errorMsg": null,
+    "errorCode": null,
+    "content": {
+        "datas": [
+            {
+                "trackId": "SSP1777030946052zykwVNpjkx3671",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903220038,
+                "name": "AI应用研发工程师",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1776672462000,
+                "workLocations": [
+                    "北京",
+                    "广州",
+                    "杭州",
+                    "南京",
+                    "上海",
+                    "深圳"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1.基础条件\n● 计算机、软件工程、人工智能等相关专业优先。\n\n2.专业能力\n● AI编程工具重度玩家：Cursor、Claude code等AI编程工具重度或顶级玩家，具备极强的Prompt编写与调优能力，有过完整的项目级开发经验，理解如何让AI写出生产级代码。\n● 大模型能力理解与掌握：理解主流LLM的能力与局限，能够清晰拆解任务并通过LLM或确定性逻辑兜底实现；熟悉主流大模型的应用范式(Context Engineering、Prompt Engineering、Agent、工具/函数调用等等)及主流Agent框架(如LangChain等)，具备大模型幻觉、Prompt注入等风险的工程化应对思路。\n● 扎实的代码和工程能力：具备扎实的计算机基础知识，深入理解数据结构、算法、网络和操作系统等相关知识，能至少在一种主流编程语言（如 Java / Python / JS 等）上有深度的实践经验，掌握常见工程实践并具备优秀的Coding 能力，能够根据场景灵活选型并快速上手。\n\n3.能力特质\n● 学习能力： 具备快速啃透前沿论文（Paper）的能力，并能将理论知识转化为工程代码。\n● 开放性与动手能力： 拒绝纸上谈兵，有自己独立完成的小项目（开源项目或个人 Demo），展现极客精神。\n● 好奇心与想象力： 面对未知事物有独特的想法，具备敏锐的问题定义能力和坚韧的解决问题能力。\n● 审美追求： 技术亦有审美，鼓励你提出能提出打动人心、简洁优雅的好想法。\n● 高能动性： 具备强烈的自驱力，能够主动探索边界，而不是等待被分配任务。\n\n加分项\n● 有AI应用或Agent实际落地经验：包括不限于RAG系统、多智能体编排、结合MCP、Skill等的Agent项目，有可展示的项目/实习成果者优先。\n● 开源贡献或技术影响力：在Github上有高质量AI项目、技术博客或社区影响力。\n● 对AI Infra有基本理解：了解vLLM、Ollama等推理框架原理，理解延迟优化、KV cache优化、流式输出等工程全局视角。\n● 在 CV（计算机视觉）或 NLP（自然语言处理）方向有扎实的理论基础，有实际业务场景模型训练(SFT、RL)等经验的优先。",
+                "description": "聚焦核心业务场景，利用Agent等前沿技术推动AI落地。你将参与从需求洞察到系统构建的全流程，通过研发智能应用与工具，提升业务效率与效果，实现技术驱动业务增长的完整闭环，推动智能规模化演进，实现技术价值转化。\n\n具体职责包括以下相关方向的一项或多项：\n1.需求理解与归因：\n● 深入业务场景，利用数据挖掘与特征分析完成现象归因；精准识别高价值问题，将模糊的业务痛点转化为明确的 AI 解决目标。\n2.架构设计：\n● 面向具体业务需求，设计 AI 原生系统架构；参与 Agent 系统核心模块的规划，包括记忆管理、推理策略与工具编排，兼顾架构的灵活性、可扩展性与工程可落地性。\n3.知识与环境构建：\n● 搭建AI与现有业务系统的交互环境，涵盖 API 接入、RAG 知识库构建、记忆方案设计；持续优化召回质量与上下文注入策略，为模型提供准确、及时的执行环境与知识支撑。\n4.核心能力实现：\n● 负责Agent关键模块的工程落地，实现意图识别、任务拆解与反思纠错闭环；封装标准化SDK/API服务，构建Agent观测体系，实现全链路追踪与多维归因分析。\n5.系统迭代与演进：\n● 建立搭建自动化评测与回测机制，通过调优与Case分析不断收敛效果与性能提升的最优路径；沉淀方法论与可复用组件，推动 AI 能力从单点验证走向规模化落地。\n6.性能优化：\n● 优化高并发场景下的系统性能，通过异步处理与降级策略保障稳定性，通过低侵入性观测手段保障系统的长期稳定运行。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "淘天集团",
+                    "淘宝闪购",
+                    "飞猪",
+                    "阿里国际数字商业集团",
+                    "阿里云",
+                    "钉钉",
+                    "千问C端事业群",
+                    "平头哥",
+                    "高德地图",
+                    "虎鲸文娱集团",
+                    "阿里健康"
+                ],
+                "circleCodeList": [
+                    "60000",
+                    "60005",
+                    "60002",
+                    "80256",
+                    "80279",
+                    "60001",
+                    "60004",
+                    "60003",
+                    "60007",
+                    "80264",
+                    "80259",
+                    "80263"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - AI 研发方向",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052uCAvQsGNYM7423",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903480006,
+                "name": "Agent Infra工程师",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1776058205000,
+                "workLocations": [
+                    "北京",
+                    "成都",
+                    "广州",
+                    "杭州",
+                    "上海",
+                    "深圳"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1.基础条件：\n● 计算机、软件工程、人工智能等相关专业优先。\n● 有顶会论文/高影响项目/开源贡献者加分。\n2.专业能力:\n● 技术基础：扎实的计算机基础（OS/网络/数据库），精通至少一门编程语言（Go/Python/Java/Rust/TypeScript），熟悉后端技术栈（微服务/消息队列/缓存）及云原生（K8s/Serverless）或安全隔离技术（Docker/gVisor）。\n● AI Agent 专精领域：深入理解大模型原理，熟悉至少一种Agent框架（LangGraph/ADK/LangChain/AutoGen/MetaGPT等）或核心组件（RAG/工具调用/SKILLS），具备Agent全生命周期管理（训练/评测/部署）经验，有强化学习或规划算法背景优先。\n● Agent Ops 运维实践：掌握LLMOps（模型版本/监控/部署）及AgentOps（编排/自愈/状态管理），熟悉可观测性系统（链路追踪/日志分析）。\n● 工程与交付能力：擅长AI Coding快速原型开发，熟悉测试与变更管理（CI/静态分析），有高并发优化或多租户隔离经验。\n3.能力特质：\n● 对AI原生应用有热情，能复现前沿技术；追求简洁可扩展的架构，沟通协作能力强。\n\n加分项：\n● 有Agent优化实战经验、参与Agent平台开发、熟悉上下文工程或多Agent协同系统。",
+                "description": "负责构建支撑AI Agent全生命周期的核心基础设施，涵盖设计构建、训练优化、安全部署、高并发调度及服务化交付等，为Agent的规模化落地提供稳定、高效、安全的底层能力。\n\n具体职责包括以下相关方向的一项或多项：\n1.Agent基础设施：设计高并发、可扩展的Agent框架，覆盖沙箱执行、容器编排、任务调度及状态管理，支持训练优化与安全部署。\n2.安全与稳定性：构建沙箱隔离与委托身份认证，确保API安全调用，并实现检查点恢复机制保障长任务可靠性。\n3.平台服务能力：开发LLM上下文预计算、知识检索等优化能力，封装SDK/API（如向量检索、观测体系）提升推理效率。\n4.AI能力产品化：模块化输出开发套件（如CLI/SKLLS），降低Agent构建与调优门槛，支持算法迭代优化。\n5.技术前瞻与落地：跟踪Agent生态技术进展，推动新技术规模化应用，持续优化架构性能与易用性。\n\n目标：通过高效、安全、先进的基础设施，实现AI Agent从开发到生产的全流程支持，加速规模化落地。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "阿里国际数字商业集团",
+                    "阿里云",
+                    "千问C端事业群",
+                    "阿里健康"
+                ],
+                "circleCodeList": [
+                    "60000",
+                    "60005",
+                    "60002",
+                    "80256",
+                    "80259"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - AI 研发方向",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052gYzIevCfyD4546",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903540003,
+                "name": "AI应用算法工程师",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1773922301000,
+                "workLocations": [
+                    "北京",
+                    "广州",
+                    "杭州",
+                    "上海"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1.基础条件\n● 计算机、数学、统计学等相关专业硕士/博士优先，优秀本科生不受限制。\n● 有顶会论文（ACL/EMNLP/ICLR/NeurIPS/ICML等）/高影响项目/开源贡献者加分。\n\n2.专业能力\n● 模型与后训练：解Transformer/LLM模型架构、演进原理与局限；具备SFT/DPO/RL等后训练与迭代能力（含数据/评估/优化），对后训练算法有实践经验和深刻认知；拥有Agentic RL训练实操经验者优先。\n● Agent与系统编排：能做任务拆解与多Agent协作；熟悉RAG、Memory、Tool-Use（含MCP/类协议/Skills等）并能工程化落地；独立开发过具备一定影响力AI应用者优先。\n● 数据构建：具备Data-centric AI意识，精通后训练所需高质量数据挖掘与构造，具备合成数据（Synthetic Data）与动作轨迹（Trajectory）构建实践经验者优先。\n● 评测与交付：能搭建评估闭环（autorater/LLM-as-judge、离线评测、A/B）；具备测试、调试、review、安全/隐私与质量门禁能力；能基于评测结果精准分析和定位问题，具备复杂多步任务的量化评估能力者优先。\n● 工程与系统素养：能够通过Vibe Coding快速构建项目原型；理解分布式系统/数据库/计算机系统基础；精通至少一门语言，熟练掌握Python与Pytorch；熟悉Git/命令行；了解大模型训练与推理框架（Megatron-LM、vLLM、DeepSpeed/FSDP等），有分布式训练/大规模数据处理经验（Hadoop/MaxCompute等）加分。\n\n3.能力特质\n● 学习力：对AI有热情、对前沿技术与产品好奇，对未知开放，能举一反三。\n● 动手能力：积极主动体验市场中先进的模型和产品，独立阅读论文/技术报告等并快速复现，快速主动尝试落地先进开源项目，对主流AI开源项目有贡献者优先。\n● 技术审美：对新技术有近乎本能的渴望，能区分“能跑”与“优雅”，追求简洁、可维护、可扩展；在模型/框架/工具选型上保持高信噪比决策。",
+                "description": "将大模型能力做成可上线、可迭代、可控成本的产品能力。通过打造数据飞轮、模型适配与后训练、评测与实验等关键手段，实现端到端的闭环交付，持续提升产品的效果与稳定性。\n\n具体职责包括以下相关方向的一项或多项：\n1.需求与问题定义\n● 深入业务与产品共创需求，将诉求转化为可执行的AI任务定义，明确目标、边界、优先级与验收口径。\n2.方案与应用架构\n● 在Prompt、RAG、微调、Agent等路线间做技术选型与权衡，设计端到端应用架构（含上下文、工具调用、记忆、权限与安全），并完成RAG、Memory、Tool Use、多Agent等能力的工程化落地与生产级集成。\n3.数据飞轮与治理\n● 搭建高效的数据采集、清洗与标注工程流水线。前瞻性地探索合成数据与模型自标注等自循环策略，同时建立完善的数据版本追踪与质量评估体系，真正打通“模型训练-业务应用-用户反馈-数据迭代”的增强回路。\n4.模型适配与后训练\n● 主导基座大模型向顶尖垂直行业专家的后训练的全链路技术演进，包括高质量的SFT、RL阶段PPO、GRPO等前沿强化学习与偏好优化算法攻坚，全面突破模型在复杂业务场景下的指令遵循精度、极致可控性与长链路逻辑推理天花板，显著提升大模型在复杂业务场景下应用能力。\n5.评测体系与实验\n● 面向业务目标设计评测指标与Rubric，搭建自动化评测框架（含人工评审），建立离线基准与线上实验体系（A/B、Bandit），持续监控指标漂移与策略投机以防止效果退化。\n6.生产交付与运营\n● 负责系统集成与上线发布，对线上质量、稳定性与成本负责，建立监控、告警、兜底与人工接管机制，推动持续迭代。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "淘天集团",
+                    "淘宝闪购",
+                    "阿里国际数字商业集团",
+                    "阿里云",
+                    "钉钉",
+                    "千问C端事业群",
+                    "高德地图",
+                    "虎鲸文娱集团",
+                    "阿里健康"
+                ],
+                "circleCodeList": [
+                    "60000",
+                    "60001",
+                    "60004",
+                    "60005",
+                    "60002",
+                    "80256",
+                    "60003",
+                    "60007",
+                    "80259",
+                    "80279"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - 算法方向",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052WMvyYgWxxq8223",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903540007,
+                "name": "AI Infra工程师",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1773921873000,
+                "workLocations": [
+                    "北京",
+                    "成都",
+                    "广州",
+                    "杭州",
+                    "上海",
+                    "深圳"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1. 基础条件：\n● 计算机、软件工程等相关专业优先。\n● 热衷于数据结构和算法、在ACM大赛成绩优异者优先；有顶会论文/高影响项目/开源贡献者加分。\n2. 专业能力：\n● 系统工程与编程能力：具备良好的系统工程基础，熟悉 Linux 开发环境，掌握 Python、Go、Java 等至少一门编程语言，具备扎实的工程实现能力。\n● 分布式系统：了解分布式系统基本原理（如一致性、容错、扩展性等）。\n● AI 系统领域专业知识：对于以下领域中的一项或者多项具备专业能力\n    ○ 了解 AI 的基本原理与常见算法，理解模型训练任务的基本流程及其资源需求。\n    ○ 了解主流训练推理框架（如 PyTorch、TensorFlow、vLLM、sglang）的基本使用方式及训练流程。\n    ○ 了解异构计算或高性能计算体系，有 GPU 相关优化经验者优先。\n3. 能力特质：\n● 沟通能力：能与跨域岗位，如：算法、产品等，进行良好的沟通。\n● 跨域视野：有较宽的技术视野与知识面，对算法研发流程、数据、GPU调度、训练、推理等相关领域的技术逻辑都有涉猎。\n● 系统思维： 乐于挑战复杂系统的性能极限，具备良好的性能分析与调优能力，喜欢从底层视角拆解并解决问题。\n● 极客精神：对 AI 大模型技术充满热情，具备快速学习新技术的能力，渴望在高性能计算领域实现技术突破。",
+                "description": "在这里，你将成为大模型技术落地的“幕后推手”。你将参与构建支撑千卡/万卡规模的 AI 计算基础设施，通过软硬件协同优化，解决大模型在训练、推理、调度全链路中的工程挑战。你的代码将直接决定大模型训练的效率、推理的响应速度以及集群资源的利用率，为 AI 时代的算力底座注入核心动力。\n\n具体的职责包括以下相关方向的一项或多项：\n1. 算力基建与分布式训练：\n● 深入分布式训练架构，优化通信与底层算子性能，解决大规模集群通信瓶颈，提升模型训练的吞吐量与计算效率。参与研究新的训练框架和模式。\n极致推理加速：\n● 针对大规模推理场景，研发高性能推理引擎，通过kernel、框架、与算法结合的有损优化等手段，实现极致的低延迟与高并发。\n2. 智能化资源调度与系统：\n● 构建大规模 GPU 集群的统一调度与编排系统，实现算力资源的弹性分配与自动化调度，设计与优化面向 AI 计算场景的高性能通信、存储系统，保障海量任务的极致的效率。\n3. 工程效率与平台化建设：\n● 打造一体化的平台，覆盖大模型研发和迭代的全流程，降低模型迭代门槛，提升研发效能。\n",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "淘天集团",
+                    "飞猪",
+                    "阿里国际数字商业集团",
+                    "阿里云",
+                    "通义大模型事业部",
+                    "千问C端事业群",
+                    "虎鲸文娱集团"
+                ],
+                "circleCodeList": [
+                    "60000",
+                    "60005",
+                    "60002",
+                    "80256",
+                    "60001",
+                    "60007",
+                    "80264",
+                    "80278"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - 工程方向",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052FqQqlzHfmh7581",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903480002,
+                "name": "AI SRE",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1773916214000,
+                "workLocations": [
+                    "北京",
+                    "广州",
+                    "杭州"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1.基础条件\n● 计算机、软件工程等相关专业优先。\n● 具备扎实的软件工程基础与良好的编程能力（Python / Go / Java 等）。\n2.专业能力\n● 系统工程能力\n    ○ 理解分布式系统和云原生架构，具备构建复杂工程系统的潜力。熟悉现代云原生基础设施，例如 Kubernetes。\n● AI-Native 工程能力\n    ○ 熟悉大语言模型（LLM）与 Agent 技术，并有将其应用于软件开发、系统分析或自动化运维的实践经验。\n    ○ 理解 Agent 的基本机制（推理、规划、工具调用），能够将复杂系统问题抽象为可执行的任务链路。\n    ○ 能够利用 AI 工具与智能体提升工程效率，并探索 AI 参与研发与运维流程的实践。\n● 系统可靠性与工程思维\n    ○ 理解系统可靠性工程理念，能够从系统设计与工程机制角度思考稳定性问题。\n    ○ 能够分析复杂系统行为并识别潜在风险与异常模式。\n\n加分项\n● 有 Agent 开发经验（LangChain / AutoGen 等）。\n● 有 AIOps / 智能运维研究或实践经验。",
+                "description": "根据 AI-Native 研发运维模式演进对运维决策、系统可靠性与基础设施可调用性的要求，完成 AI Ops 体系与关键能力建设，统筹可观测性、故障治理、可靠性优化和知识沉淀等工作，支撑运维智能化升级，实现系统稳定、高效与可规模化运行。\n\n具体职责包括以下相关方向的一项或多项：\n● 推动 AI-Native 研发运维模式演进：探索 AI 与工程师协同的软件研发与运维方式，让 AI 参与系统架构分析、运维决策与故障诊断。\n● 构建 AI-Native Reliability System：设计具备推理能力的 SRE Agent，并结合系统可观测数据与知识体系，构建智能化系统分析与决策能力。\n● 建设 AI-Ready 运维基础设施：升级运维基础设施，使系统数据、工具能力与执行接口能够被 AI 调用与理解。\n● 设计可规模化的系统可靠性工程机制：通过系统架构与工程机制设计提升系统可靠性，例如故障隔离、风险控制与安全发布策略。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里云",
+                    "千问C端事业群",
+                    "虎鲸文娱集团"
+                ],
+                "circleCodeList": [
+                    "60002",
+                    "80256",
+                    "60007"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - 工程方向",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052dCneXGFuQa2528",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903220056,
+                "name": "AI数据工程师",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1773916031000,
+                "workLocations": [
+                    "北京",
+                    "杭州",
+                    "上海"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1.基础条件\n● 计算机、软件工程、数学、统计、人工智能、大数据、机器人等相关专业硕士/博士优先（非此类专业，有相关经验亦可）。\n● 有顶会论文/高影响项目/开源贡献者加分。\n\n2.专业能力\n● 大数据处理技术：深入理解大规模分布式数据处理系统原理，熟悉Spark/Flink/Ray等开源技术栈；深入理解流批处理原理（计算模型、调度和资源管理、容错与一致性等）；可独立完成面向全模态数据（结构化/文本/图像/音频/视频）的批流一体数据处理开发与优化。\n● 大模型技术的理解与掌握：深入理解大模型核心原理，包括Transformer架构、上下文学习（ICL）、指令微调（Instruction Tuning）、检索增强生成（RAG）及推理机制（如思维链CoT）等关键技术；熟悉大模型在预训练、监督微调（SFT）和强化学习对齐（RLHF/RLAIF）等阶段的数据需求与优化逻辑。能够基于领域场景设计高质量数据处理与合成算法，通过系统化的数据迭代、评估反馈与模型微调闭环，持续驱动大模型在特定领域的能力提升与性能优化 。\n● AI编程意识与工程思维：能持续快速学习AI研发新范式，熟练运用主流AI工具，独立完成从需求分析、架构设计到高质量代码实现的系统级开发任务，并确保代码的可维护性、可扩展性与工程规范性。\n● 跨学科、跨领域的理解： 通过评测及数据驱动的方式提升模型的效果，结合对大模型及垂直领域的深度融合理解，能够设计面向领域的高质量评测集和数据集，针对基础模型短板设计相应的模型训练策略，不断突破基础模型的能力上限。\n● 工程与系统素养：能至少在一种主流编程语言（如 Java / Python / C++ 等）上有深度的实践经验，掌握常见工程实践并具备优秀的Coding能力，能够根据场景灵活选型并快速上手。\n\n3.能力特质\n● 好奇心：对AI有热情、对前沿技术与产品好奇。\n● 持续学习：能快速地学习、掌握新的知识与技术。\n● 沟通交流：能与其他人进行良好的沟通、交流，拓宽自身的视野与知识面。\n● 认真负责：有责任感，能确保工作完整的闭环、高质量的交付，为团队、合作方提供可信赖的支撑。",
+                "description": "以数据驱动、评测驱动的方式，构建数据高效迭代闭环，建立从数据寻源、标注、处理、合成到评测的全链路数据体系，持续建设高质量数据集和评测集，不断推动基础模型能力提升，推动AI模型和应用发展。\n\n具体职责包括以下相关方向的一项或多项：\n1.全模态数据处理：\n● 参与研发万亿级数据规模的全模态数据处理引擎。\n● 通过设计高性能、可复用的数据处理算子，构建覆盖全生命周期的自动化数据生产pipeline。\n● 解决海量数据在清洗、脱敏及增强过程中的计算瓶颈，利用智能筛选与精准对齐算法交付极具竞争力的高质量训练集。\n● 持续优化全链路交付效能，确保数据质量与处理规模世界领先。\n2.大模型数据理解与资产体系建设：\n● 参与全模态AI数据基础设施建设。 负责设计支撑AGI 演进的多模态语义标签标准与特征映射体系，通过构建先进的质量度量模型与内容理解框架，实现对海量 3D、视频、音频等复杂数据的自动化精炼，精细化的数据理解体系加速AGI发展的科学性与高效性。\n● 构建核心AI数据战略资产体系。 结合业务垂直场景与最前沿算法，深度参与海量数据的解析、挖掘与性能优化，驱动EB级全模态数据的深度解析与价值发现；通过全链路的智能处理与挖掘优化，将海量数据转化为高稀缺性和行业竞争壁垒的AI数据资产。\n3.领域全链路数据策略建设：\n● 设计实现面向大模型细分领域的模型性能优化的全链路数据体系，涵盖评测体系设计、数据加工与数据合成链路、数据标注策略设计。\n● 深度理解大模型细分领域的技术点，实践“评测驱动”（Evaluation-Driven Development，EDD）的大模型迭代方法，确保千问、万相等基础模型能力持续处于世界领先水平。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "淘天集团",
+                    "淘宝闪购",
+                    "飞猪",
+                    "阿里国际数字商业集团",
+                    "阿里云",
+                    "通义大模型事业部",
+                    "钉钉",
+                    "千问C端事业群",
+                    "虎鲸文娱集团",
+                    "阿里健康"
+                ],
+                "circleCodeList": [
+                    "60000",
+                    "60005",
+                    "60002",
+                    "80279",
+                    "60001",
+                    "80278",
+                    "80256",
+                    "60003",
+                    "60007",
+                    "80259",
+                    "80264"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - 数据研发",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052qiDKhzZDvp2404",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903500011,
+                "name": "AI Agent优化工程师-训练/数据/评测",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1773915837000,
+                "workLocations": [
+                    "北京",
+                    "杭州"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "基础要求\n1、专业要求：计算机、数学、统计学等相关专业硕士/博士优先，优秀本科生不受限制；\n2、模型理解与优化：深入理解Transformer和主流LLM模型架构演进原理，对后训练算法有实操经验和深刻认知，拥有Agentic RL训练实操经验者优先；\n3、AI应用构建能力：掌握主流AI协议（MCP、Skills等）、记忆系统（Memory）、知识库（RAG），独立开发过具备一定影响力AI应用者优先；\n4、代码与工程能力：较强Python编程能力，熟练掌握Pytorch，了解大模型训练与推理框架（Megatron-LM、vLLM、DeepSpeed等），能高效处理分布式环境下的工程问题；\n5、数据构建能力：有很强的Data-centric AI的意识，精通后训练所需高质量数据挖掘与构造，具备合成数据（Synthetic Data）与动作轨迹（Trajectory）构建实操经验者优先；\n6、评测能力：拒绝盲目调参，能针对Agent任务设计科学的评测体系（LLM-as-a-Judge），能基于评测结果精准分析和定位问题，具备复杂多步任务的量化评估能力者优先。\n7、对新技术有近乎本能的渴望，能够独立阅读论文/技术报告等并快速复现，快速主动尝试落地先进开源项目，对主流AI开源项目有贡献者优先。\n\n加分项：\n1、在AI顶会（ACL/EMNLP/ICLR/NeurIPS/ICML等）发表大模型评测、数据合成、Agent、RL相关一作或共一论文；\n2、知名大模型评测框架或高质量开源数据核心贡献者；\n3、极强的数学功底和逻辑分析能力，对高质量数据和评测有端到端闭环经验。",
+                "description": "这是一个综合的AI推理、优化的技术岗位，适合希望从事以下工作的候选人投递：\n● 希望从事AI应用构建与模型优化工作的候选人\n● 希望从事AI应用数据构建与自动化评测工作的候选人\n● 希望从事多模态AI应用构建与算法优化工作的候选人\n\n围绕真实业务核心场景，参与AI应用的系统化构建与优化，把AI变为业务增长引擎，具体职责包括以下相关方向的一项或多项：\n1、AI应用全生命周期演进：深度参与业务问题建模、应用架构设计、上下文工程、训练数据构建、自动化评估体系、模型后训练优化等；\n2、数据飞轮构建：打造高质量数据生产链路，探索合成数据（Synthetic Data）与高效蒸馏技术方案，跑通“业务-模型-反馈”迭代闭环；\n3、评测体系构建：面向业务目标，设计完备的AI应用效果评估体系，构建自动化评估框架，建立离线评估与在线业务指标联动的量化评估能力；\n4、强化学习与奖励机制设计：构建可工程化的Reward体系与RL训练环境，提升模型在垂直业务场景中的可控性与泛化能力；\n5、AI外部能力体系搭建：实现AI应用所需的知识库（RAG）、长短期记忆系统（Memory）、工具调用、多Agent协作框架等\n6、多模态AI应用开发：构建AI应用的多模态感知与推理能力，解决在UI自动化、视觉理解与审核、多模态会话等场景的落地应用问题。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "淘天集团",
+                    "飞猪",
+                    "虎鲸文娱集团"
+                ],
+                "circleCodeList": [
+                    "60001",
+                    "60007",
+                    "80264",
+                    "60000"
+                ],
+                "niuKeProjectName": "阿里巴巴集团27届 - 算法方向",
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052oNvcJWOoxU8968",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199904500001,
+                "name": "AI-HR数字化专员",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1777023192000,
+                "workLocations": [
+                    "杭州"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1、 教育背景\n    ○ 本科及以上学历，理工科、人力资源管理、心理学、组织行为学、社会学等相关专业优先；\n2、核心素质\n    ○ 对AI技术和数字化工具保持高度敏感和好奇心，乐于尝试和应用新技术解决业务问题；\n    ○ 具备优秀的逻辑思维能力，擅长将模糊的业务问题结构化、清晰化；\n    ○ 对人性研究、组织行为有浓厚兴趣，具备敏锐的业务洞察力和用户思维；\n    ○ 具备创新意识，善于跳出传统框架思考，探索更优解决方案；\n3、 能力要求\n    ○ 熟练使用各类AI工具（如ChatGPT、千问等）进行信息检索、内容生成、数据分析；\n    ○ 具备基础的数据敏感度，能够理解和解读数据背后的业务含义；\n    ○ 优秀的沟通表达能力，能够清晰阐述问题定义和解决方案；\n    ○ 良好的项目管理意识，能够推动想法落地执行；\n4、软性能力\n    ○ 自我驱动，具备较强的学习能力和适应能力；\n    ○ 具备协作精神，能够与业务团队、技术团队高效配合；\n    ○ 对HR工作有热情，愿意深入理解业务、服务业务。\n5、职业发展路径，定向培养为以下方向的专业人才：\n    ○ HR数据与智能应用专家\n    ○ 组织发展（OD）专员\n    ○ 人才发展（TD）专员\n    ○ 招聘策略与运营专家\n    ○ 员工体验与组织文化设计师\n6、培养机制\n    ○ 导师制：配备一对一资深导师，制定详细的培养计划与辅导方案；\n    ○ 实战项目制：匹配有挑战性的真实业务项目，在实践中快速成长；\n    ○ 实习周期：期待你能有2个月或以上的时间参与实习；\n    ○ 转正机会：实习考核通过后可获得正式校招Offer。\n7、加分项\n    ○ 有HR相关实习/项目经验，熟悉至少一个HR模块的全流程运作；\n    ○ 曾独立运用AI工具解决实际问题（如用LLM辅助调研、生成分析报告、搭建简易知识库等）；\n    ○ 具备基础编程能力（Python/SQL/R等）或参与过数据分析类竞赛；\n    ○ 在校期间主导或深度参与过组织变革、用户研究、商业案例分析等相关课题；\n    ○ 对人力资源数字化、未来工作形态、人机协同等议题有独立思考与书面输出。",
+                "description": "随着人工智能技术的深度演进，人力资源管理正向“数据与智能驱动”的系统性升级。在此背景下，我们启动 AI-HR数字化人才培养计划，希望选拔并培养兼具业务理解力、数据思维与技术敏感度的复合型HR新生力量，共同参与组织智能化建设中。\n\n1、场景洞察与需求挖掘：深入招聘、绩效管理、薪酬激励、人才发展等HR模块一线业务，识别可由AI赋能提效或创新的典型场景，完成问题定义与可行性评估；\n2、问题结构化与任务拆解：运用系统思维与AI方法论，将模糊的管理挑战转化为可量化、可建模、可验证的数字化任务；\n3、智能工具开发与应用落地：协同技术团队，基于大语言模型（LLM）、流程自动化（RPA）、数据分析平台等工具，设计并推动HR智能应用的最小可行产品（MVP）落地；\n4、数据驱动决策支持：参与人力资源数据治理与分析建模，辅助生成组织健康度、人才流动趋势、高潜识别等关键洞察报告；\n5、方案设计与迭代优化：结合业务反馈，持续优化AI-HR解决方案，确保技术应用始终服务于“激发个体潜能、提升组织效能”的根本目标。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "职能类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "菜鸟集团"
+                ],
+                "circleCodeList": [
+                    "60006"
+                ],
+                "niuKeProjectName": null,
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052VuWjCTnpHf7487",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199904640001,
+                "name": "数智化物流解决方案",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1776999030000,
+                "workLocations": [
+                    "杭州",
+                    "深圳"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1.本科及以上学历，计算机、人工智能、物流工程等理工科相关专业；英文流利，可作为工作语言者；小语种专业优先；\n2.对大模型、多模态生成有浓厚兴趣及深度体验，了解 AIGC 基本原理及工作流（如 ComfyUI、RAG 等）；\n3.具备极强的项目统筹与跨部门协作能力，能有效调动研发、市场、销售等多方资源推动项目落地；\n4.具备强烈的客户服务意识、责任心及执行力；相信“方法总比困难多”，善于解决复杂环境下的实际问题。",
+                "description": "1.参与全球化物流产品解决方案的设计与优化，对产品时效、成本、规模负责；\n2.运用 AI 工具对物流产品全链路等环节进行智能化升级，持续提效降本；\n3.负责目的国物流供应商对接、商务谈判及日常运营 Review，并应对目的国政策法规及异常处理；\n4.负责项目从售前到交付的平稳转入，把控项目范围与风险，确保项目成功交付并达成业务目标。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "物流类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "菜鸟集团"
+                ],
+                "circleCodeList": [
+                    "60006"
+                ],
+                "niuKeProjectName": null,
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            },
+            {
+                "trackId": "SSP1777030946052VNeXbjPBtK7611",
+                "positionUrl": null,
+                "bucket": "DEFAULT",
+                "id": 199903240022,
+                "name": "芯片设计/验证/DFT工程师",
+                "status": "recruit",
+                "categories": null,
+                "publishTime": null,
+                "graduationTime": {
+                    "from": 1793491200000,
+                    "to": 1824940800000
+                },
+                "modifyTime": 1776948589000,
+                "workLocations": [
+                    "北京",
+                    "成都",
+                    "杭州",
+                    "上海",
+                    "深圳"
+                ],
+                "interviewLocations": [
+                    "远程"
+                ],
+                "regionEnNameMap": {},
+                "technologyNameIdMap": {},
+                "tags": null,
+                "requirement": "1. 熟悉ASIC芯片设计流程；\n2. 熟悉System Verilog, Verilog等设计语言；\n3. 熟悉Simulation, Synthesis, Lint, Formal Verification等流程和EDA工具的使用；\n4. 熟悉Linux/Unix系统环境，精通Python, Ruby, Perl, TCL, C/C++, Makefile等至少一门编程语言；\n5. 学习能力强，能快速适应新环境；良好的沟通能力和团队协同能力。\n\n【加分项】\n1. 熟悉ASIC芯片验证方法学，熟悉UVM/OVM；\n2. 熟悉计算机体系结构，了解深度学习算法；\n3. 有相关实习及项目经历。",
+                "description": "1. 使用Verilog & System Verilog编写芯片RTL代码； \n2. 搭建测试平台，产生测试向量验证芯片Function和Performance； \n3. 使用综合工具产生网表，优化时序/面积，并参与分析后端布局布线的结果；\n4. 使用Power分析工具优化芯片功耗； \n5. 开发自动化流程提高芯片设计效率。",
+                "experience": null,
+                "degree": null,
+                "department": null,
+                "project": null,
+                "positionType": null,
+                "code": null,
+                "categoryName": "技术类",
+                "categoryType": "internship",
+                "batchName": "阿里巴巴2027届实习生",
+                "batchId": 100000540002,
+                "batchWillingCount": null,
+                "channels": [
+                    "campus_group_official_site",
+                    "campus_intranet_site_referral",
+                    "new_campus_niuke_website",
+                    "new_campus_shixiseng_website"
+                ],
+                "operations": [],
+                "isTongyi": false,
+                "circle": null,
+                "circleNames": [
+                    "阿里巴巴控股集团",
+                    "平头哥"
+                ],
+                "circleCodeList": [
+                    "80263",
+                    "60000"
+                ],
+                "niuKeProjectName": null,
+                "useInternal": null,
+                "isLingYang": null,
+                "tongyi": false
+            }
+        ],
+        "totalCount": 484,
+        "pageSize": 10,
+        "currentPage": 1
+    }
+}
+
+
+job_url:https://campus-talent.alibaba.com/campus/position/199903220038?deptCodes=
+职位详情页
+请求url:https://campus-talent.alibaba.com/position/detail?_csrf=3b7d85ef-d2a4-4920-85f3-82e76b8f4bfd
+请求方法：post
+请求体:{"id":"199903220038","channel":"campus_group_official_site","language":"zh"}
+响应json:{
+    "success": true,
+    "errorMsg": null,
+    "errorCode": null,
+    "content": {
+        "trackId": null,
+        "positionUrl": null,
+        "bucket": "DEFAULT",
+        "id": 199903220038,
+        "name": "AI应用研发工程师",
+        "status": "recruit",
+        "categories": null,
+        "publishTime": null,
+        "graduationTime": {
+            "from": 1793491200000,
+            "to": 1824940800000
+        },
+        "modifyTime": 1776672462000,
+        "workLocations": [
+            "北京",
+            "广州",
+            "杭州",
+            "南京",
+            "上海",
+            "深圳"
+        ],
+        "interviewLocations": [
+            "远程"
+        ],
+        "regionEnNameMap": {},
+        "technologyNameIdMap": {},
+        "tags": null,
+        "requirement": "1.基础条件\n● 计算机、软件工程、人工智能等相关专业优先。\n\n2.专业能力\n● AI编程工具重度玩家：Cursor、Claude code等AI编程工具重度或顶级玩家，具备极强的Prompt编写与调优能力，有过完整的项目级开发经验，理解如何让AI写出生产级代码。\n● 大模型能力理解与掌握：理解主流LLM的能力与局限，能够清晰拆解任务并通过LLM或确定性逻辑兜底实现；熟悉主流大模型的应用范式(Context Engineering、Prompt Engineering、Agent、工具/函数调用等等)及主流Agent框架(如LangChain等)，具备大模型幻觉、Prompt注入等风险的工程化应对思路。\n● 扎实的代码和工程能力：具备扎实的计算机基础知识，深入理解数据结构、算法、网络和操作系统等相关知识，能至少在一种主流编程语言（如 Java / Python / JS 等）上有深度的实践经验，掌握常见工程实践并具备优秀的Coding 能力，能够根据场景灵活选型并快速上手。\n\n3.能力特质\n● 学习能力： 具备快速啃透前沿论文（Paper）的能力，并能将理论知识转化为工程代码。\n● 开放性与动手能力： 拒绝纸上谈兵，有自己独立完成的小项目（开源项目或个人 Demo），展现极客精神。\n● 好奇心与想象力： 面对未知事物有独特的想法，具备敏锐的问题定义能力和坚韧的解决问题能力。\n● 审美追求： 技术亦有审美，鼓励你提出能提出打动人心、简洁优雅的好想法。\n● 高能动性： 具备强烈的自驱力，能够主动探索边界，而不是等待被分配任务。\n\n加分项\n● 有AI应用或Agent实际落地经验：包括不限于RAG系统、多智能体编排、结合MCP、Skill等的Agent项目，有可展示的项目/实习成果者优先。\n● 开源贡献或技术影响力：在Github上有高质量AI项目、技术博客或社区影响力。\n● 对AI Infra有基本理解：了解vLLM、Ollama等推理框架原理，理解延迟优化、KV cache优化、流式输出等工程全局视角。\n● 在 CV（计算机视觉）或 NLP（自然语言处理）方向有扎实的理论基础，有实际业务场景模型训练(SFT、RL)等经验的优先。",
+        "description": "聚焦核心业务场景，利用Agent等前沿技术推动AI落地。你将参与从需求洞察到系统构建的全流程，通过研发智能应用与工具，提升业务效率与效果，实现技术驱动业务增长的完整闭环，推动智能规模化演进，实现技术价值转化。\n\n具体职责包括以下相关方向的一项或多项：\n1.需求理解与归因：\n● 深入业务场景，利用数据挖掘与特征分析完成现象归因；精准识别高价值问题，将模糊的业务痛点转化为明确的 AI 解决目标。\n2.架构设计：\n● 面向具体业务需求，设计 AI 原生系统架构；参与 Agent 系统核心模块的规划，包括记忆管理、推理策略与工具编排，兼顾架构的灵活性、可扩展性与工程可落地性。\n3.知识与环境构建：\n● 搭建AI与现有业务系统的交互环境，涵盖 API 接入、RAG 知识库构建、记忆方案设计；持续优化召回质量与上下文注入策略，为模型提供准确、及时的执行环境与知识支撑。\n4.核心能力实现：\n● 负责Agent关键模块的工程落地，实现意图识别、任务拆解与反思纠错闭环；封装标准化SDK/API服务，构建Agent观测体系，实现全链路追踪与多维归因分析。\n5.系统迭代与演进：\n● 建立搭建自动化评测与回测机制，通过调优与Case分析不断收敛效果与性能提升的最优路径；沉淀方法论与可复用组件，推动 AI 能力从单点验证走向规模化落地。\n6.性能优化：\n● 优化高并发场景下的系统性能，通过异步处理与降级策略保障稳定性，通过低侵入性观测手段保障系统的长期稳定运行。",
+        "experience": null,
+        "degree": null,
+        "department": null,
+        "project": null,
+        "positionType": null,
+        "code": null,
+        "categoryName": "技术类",
+        "categoryType": "internship",
+        "batchName": "阿里巴巴2027届实习生",
+        "batchId": 100000540002,
+        "batchWillingCount": 2,
+        "channels": [
+            "campus_group_official_site",
+            "campus_intranet_site_referral",
+            "new_campus_niuke_website",
+            "new_campus_shixiseng_website"
+        ],
+        "operations": [],
+        "isTongyi": false,
+        "circle": "1002",
+        "circleNames": [
+            "阿里巴巴控股集团",
+            "淘天集团",
+            "淘宝闪购",
+            "飞猪",
+            "阿里国际数字商业集团",
+            "阿里云",
+            "钉钉",
+            "千问C端事业群",
+            "平头哥",
+            "高德地图",
+            "虎鲸文娱集团",
+            "阿里健康"
+        ],
+        "circleCodeList": [
+            "60000",
+            "60005",
+            "60002",
+            "80256",
+            "80279",
+            "60001",
+            "60004",
+            "60003",
+            "60007",
+            "80264",
+            "80259",
+            "80263"
+        ],
+        "niuKeProjectName": "阿里巴巴集团27届 - AI 研发方向",
+        "useInternal": null,
+        "isLingYang": null,
+        "tongyi": false
+    }
+}

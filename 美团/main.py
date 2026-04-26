@@ -56,6 +56,7 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
     description, requirement = extract_description_requirement(data)
     bonus = data.get("precedence", "")
     work_experience = data.get("workYear") or ""
+    status = 0
 
     # 以下字段 API 未提供
     salary = None
@@ -77,7 +78,7 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
 
     try:
         save_to_database(
-            status=0,
+            status=status,
             table_name="job",
             columns=["company_id", "job_type", "job_url", "post_id", "title",
                      "category", "description", "requirement", "bonus",

@@ -6,7 +6,6 @@
 from global_main import fetch_with_retry, run_crawler
 from global_db import save_to_database
 
-
 # ---------- 配置 ----------
 COMPANY_ID = "C008"
 CAMPUS_LIST_URL = "https://careers.pddglobalhr.com/api/careers/api/recruit/position/list"
@@ -55,6 +54,7 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
     description, requirement = extract_description_requirement(data)
     bonus = data.get("bonus") or ""
     final_location = data.get("workLocationName") or location
+    status=0
 
     # 从 fallback 列表数据回退
     if fallback_job and isinstance(fallback_job, dict):
@@ -78,10 +78,9 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
     education = ""
     publish_time = ""
     work_experience = ""
-
     try:
         save_to_database(
-            status=0,
+            status=status,
             table_name="job",
             columns=["company_id", "job_type", "job_url", "post_id", "title",
                      "category", "description", "requirement", "bonus",

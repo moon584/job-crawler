@@ -28,12 +28,12 @@ def save_to_database(status,table_name, columns, data_tuple, unique_key, db_conf
         exists = cursor.fetchone() is not None
 
         if exists:
-            # 更新
+            # 更新（同时刷新 crawled_at，防止过期检查误判）
             set_clause = ', '.join([f"`{col}` = %s" for col in columns if col != unique_key])
             if status==404:
-                update_sql = f"UPDATE `{table_name}` SET {set_clause}, `is_deleted` = 1 WHERE `{unique_key}` = %s"
+                update_sql = f"UPDATE `{table_name}` SET {set_clause}, `is_deleted` = 1, `crawled_at` = NOW() WHERE `{unique_key}` = %s"
             else:
-                update_sql = f"UPDATE `{table_name}` SET {set_clause}, `is_deleted` = 0 WHERE `{unique_key}` = %s"
+                update_sql = f"UPDATE `{table_name}` SET {set_clause}, `is_deleted` = 0, `crawled_at` = NOW() WHERE `{unique_key}` = %s"
             update_values = [data_tuple[i] for i in range(len(columns)) if columns[i] != unique_key]
             update_values.append(key_value)
             cursor.execute(update_sql, update_values)

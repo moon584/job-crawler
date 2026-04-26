@@ -4,7 +4,7 @@
 """
 
 import time
-from global_main import fetch_with_retry, get_user_pagination, random_delay, search_expired_job
+from global_main import fetch_with_retry, get_user_pagination, random_delay, search_expired_job, get_max_items
 from global_db import save_to_database
 from datetime import datetime
 
@@ -57,10 +57,11 @@ def get_detail(post_id: str, location: str, job_url: str, detected_job_type: int
     education = None
     publish_time = None
     work_experience = None
+    status = data_json.get("status") or 0
 
     try:
         save_to_database(
-            status=0,
+            status=status,
             table_name="job",
             columns=["company_id", "job_type", "job_url", "post_id", "title",
                      "category", "description", "requirement", "bonus",
@@ -119,6 +120,7 @@ def process_job(job: dict, _job_type: int) -> bool:
 def main():
     # 由于 job_type 动态，无法使用 run_crawler 的自动过期检查，需要自己实现完整流程
     start_page, page_size = get_user_pagination()
+    max_items = get_max_items()
     start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     current_page = start_page
     total_count = 0
@@ -132,7 +134,12 @@ def main():
         for job in jobs:
             if process_job(job, 0):
                 success_count += 1
+                if max_items > 0 and success_count >= max_items:
+                    break
         print(f"已获取第 {current_page} 页，本页 {len(jobs)} 条，累计成功 {success_count} / {total_count} 条")
+        if max_items > 0 and success_count >= max_items:
+            print(f"已达到最大爬取条数限制（{max_items}条），停止")
+            break
         if current_page * page_size >= total_count:
             completed = True
             break
@@ -141,7 +148,9 @@ def main():
 
     print(f"抓取完成，成功保存 {success_count} 个职位，总记录数 {total_count}")
     if completed and total_count > 0:
+        # 动态检测可能产生两种 job_type：校招(1)和实习(2)，都需要做过期检查
         search_expired_job(COMPANY_ID, 1, start_time)
+        search_expired_job(COMPANY_ID, 2, start_time)
 
 
 if __name__ == "__main__":

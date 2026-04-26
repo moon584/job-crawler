@@ -49,6 +49,7 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
                                 timeout=REQUEST_TIMEOUT, retry_times=RETRY_TIMES)
         if resp:
             detail_data = resp.get("data") or {}
+            status = resp.get("status") or 0    #检测岗位是否下架
 
     # 2. 提取字段（优先详情，其次 fallback_job）
     title = detail_data.get("title") or ""
@@ -100,7 +101,7 @@ def get_detail(post_id: str, location: str, job_url: str, job_type: int, fallbac
     # 3. 入库
     try:
         save_to_database(
-            status=0,
+            status=status,
             table_name="job",
             columns=["company_id", "job_type", "job_url", "post_id", "title",
                      "category", "description", "requirement", "bonus",

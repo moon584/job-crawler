@@ -2,6 +2,7 @@ from 腾讯.social import get_detail as _C001_social_get_detail
 from 腾讯.campus import get_detail as _tencent_campus_get_detail
 from 美团.main import get_detail as _meituan_get_detail
 from 拼多多.campus import get_detail as _pdd_get_detail
+from 阿里巴巴.campus import get_detail as _alibaba_get_detail
 
 import pymysql
 from db_conn import connect_db
@@ -23,6 +24,8 @@ _DISPATCH = {
     # 拼多多
     ("C008", 1): _pdd_get_detail,
     ("C008", 2): _pdd_get_detail,
+    # 阿里巴巴（仅实习）
+    ("C002", 2): _alibaba_get_detail,
 }
 
 
@@ -81,19 +84,20 @@ def rewrite_jobs(process_func=None, db_config=None, company_id=None, job_type=No
         for row in rows:
             post_id, location, job_url, row_job_type, row_company_id = row
             print(f"正在修复空缺职位 [{row_company_id}]: {job_url}")
+            print(f"  -> 请求详情 API ...")
 
             func = process_func or _DISPATCH.get((row_company_id, row_job_type))
             if func is None:
-                print(f"跳过，无对应处理函数: company_id={row_company_id}")
+                print(f"  -> 跳过，无对应处理函数: company_id={row_company_id}")
                 continue
 
             try:
                 if func(post_id, location, job_url, row_job_type):
                     success_count += 1
                 else:
-                    print(f"修复失败: {job_url}")
+                    print(f"  -> 修复失败: {job_url}")
             except Exception as e:
-                print(f"处理异常 {job_url}: {e}")
+                print(f"  -> 处理异常 {job_url}: {e}")
 
         print(f"共处理 {len(rows)} 个空缺职位，成功修复 {success_count} 个")
         return success_count

@@ -1,0 +1,590 @@
+company_id=C005
+职位列表
+请求url:https://campus.game.163.com/api/recruitment/campus/position/list
+请求方法：post
+请求体:{
+  "projectIds": [30],
+  "positionTypeIds": [],
+  "workplaceIds": [],
+  "positionExternalTagIds": [],
+  "attributeTypes": [],
+  "pageNum": 1
+}
+响应json:{
+    "status": 1,
+    "message": "成功",
+    "data": {
+        "list": [
+            {
+                "positionId": 1547,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 1,
+                "externalPositionName": "游戏设计师（文案）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:26:32"
+            },
+            {
+                "positionId": 1549,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 1,
+                "externalPositionName": "游戏设计师（关卡/系统/数值/战斗）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:24:50"
+            },
+            {
+                "positionId": 1556,
+                "projectId": 30,
+                "positionTypeId": 17,
+                "popular": 1,
+                "externalPositionName": "游戏研发工程师（客户端&服务端）",
+                "positionTypes": [
+                    {
+                        "typeId": 17,
+                        "typeName": "游戏研发类",
+                        "parentTypeId": 2
+                    },
+                    {
+                        "typeId": 2,
+                        "typeName": "游戏研发与技术类"
+                    }
+                ],
+                "positionTypeAbbreviation": "游戏研发类-游戏研发与技术类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:21:34"
+            },
+            {
+                "positionId": 1546,
+                "projectId": 30,
+                "positionTypeId": 27,
+                "popular": 1,
+                "externalPositionName": "游戏特效设计师",
+                "positionTypes": [
+                    {
+                        "typeId": 27,
+                        "typeName": "游戏美术类",
+                        "parentTypeId": 3
+                    },
+                    {
+                        "typeId": 3,
+                        "typeName": "艺术&设计类"
+                    }
+                ],
+                "positionTypeAbbreviation": "游戏美术类-艺术&设计类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-09 19:30:45"
+            },
+            {
+                "positionId": 1543,
+                "projectId": 30,
+                "positionTypeId": 27,
+                "popular": 1,
+                "externalPositionName": "游戏动画设计师",
+                "positionTypes": [
+                    {
+                        "typeId": 27,
+                        "typeName": "游戏美术类",
+                        "parentTypeId": 3
+                    },
+                    {
+                        "typeId": 3,
+                        "typeName": "艺术&设计类"
+                    }
+                ],
+                "positionTypeAbbreviation": "游戏美术类-艺术&设计类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    }
+                ],
+                "publishedAt": "2026-01-09 19:29:44"
+            },
+            {
+                "positionId": 1541,
+                "projectId": 30,
+                "positionTypeId": 27,
+                "popular": 1,
+                "externalPositionName": "游戏角色原画设计师",
+                "positionTypes": [
+                    {
+                        "typeId": 27,
+                        "typeName": "游戏美术类",
+                        "parentTypeId": 3
+                    },
+                    {
+                        "typeId": 3,
+                        "typeName": "艺术&设计类"
+                    }
+                ],
+                "positionTypeAbbreviation": "游戏美术类-艺术&设计类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-09 19:29:30"
+            },
+            {
+                "positionId": 1613,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（AI+策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-04-27 10:30:39"
+            },
+            {
+                "positionId": 1548,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（任务策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:28:17"
+            },
+            {
+                "positionId": 1550,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（运营策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:27:55"
+            },
+            {
+                "positionId": 1551,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（技术策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:27:22"
+            },
+            {
+                "positionId": 1555,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（关卡策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:25:48"
+            },
+            {
+                "positionId": 1553,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（战斗策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:25:18"
+            },
+            {
+                "positionId": 1552,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（数值策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:24:29"
+            },
+            {
+                "positionId": 1554,
+                "projectId": 30,
+                "positionTypeId": 15,
+                "popular": 0,
+                "externalPositionName": "游戏设计师（系统策划）",
+                "positionTypes": [
+                    {
+                        "typeId": 15,
+                        "typeName": "策划类",
+                        "parentTypeId": 1
+                    },
+                    {
+                        "typeId": 1,
+                        "typeName": "游戏策划类"
+                    }
+                ],
+                "positionTypeAbbreviation": "策划类-游戏策划类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-01-12 10:23:34"
+            },
+            {
+                "positionId": 1604,
+                "projectId": 30,
+                "positionTypeId": 17,
+                "popular": 0,
+                "externalPositionName": "AI Agent 工程师（游戏研发方向）",
+                "positionTypes": [
+                    {
+                        "typeId": 17,
+                        "typeName": "游戏研发类",
+                        "parentTypeId": 2
+                    },
+                    {
+                        "typeId": 2,
+                        "typeName": "游戏研发与技术类"
+                    }
+                ],
+                "positionTypeAbbreviation": "游戏研发类-游戏研发与技术类",
+                "workCities": [
+                    {
+                        "cityId": 2,
+                        "cityName": "广州"
+                    },
+                    {
+                        "cityId": 84,
+                        "cityName": "杭州"
+                    },
+                    {
+                        "cityId": 373,
+                        "cityName": "上海"
+                    }
+                ],
+                "publishedAt": "2026-04-17 11:30:52"
+            }
+        ],
+        "count": 50
+    }
+}
+
+
+job_url:https://campus.game.163.com/position-detail/1547
+职位详情页
+请求url:https://campus.game.163.com/api/recruitment/campus/position/detail?positionId=1547
+请求方法：get
+请求体:
+响应json:{
+    "status": 1,
+    "message": "成功",
+    "data": {
+        "positionId": 1547,
+        "projectId": 30,
+        "positionTypeId": 15,
+        "popular": 1,
+        "publishedAt": "2026-01-12 10:26:32",
+        "info": {
+            "projectName": "2027届实习生项目",
+            "externalPositionName": "游戏设计师（文案）",
+            "externalVolunteerDept": "",
+            "positionDescription": "您可以：\n- 通过自己的文笔与想象，做虚拟世界的架构者 ；\n- 做游戏的编剧，设计游戏的剧情，编织角色之间的爱恨情仇，还能在其中埋下未来大家口耳相传的“梗”；\n- 做游戏的导演，设计游戏的表现形式，让角色以你的方式表达自我；\n- 掌管游戏的视觉、听觉，精心雕琢你想实现的一切；\n- 在一流的环境中，为成为一名优秀的文案策划学习和成长。",
+            "positionRequirement": "我们希望您：\n- 专业不限，有较强的文字功底、有作品创作经验者优先（如有，请在网申页面附上作品）；\n- 热爱游戏，对游戏体验有独到见解，渴望加入游戏行业；\n- 善于与他人协作，拥有广博的知识面，或是在某一领域具备深入见解，包括但不限于以下领域：文学、戏剧、历史、哲学、中国文化、西方文化、近代流行文化、偶像综艺、二次元、同人圈、欧美圈、科幻、玄幻、魔幻、蒸汽朋克、克苏鲁、北欧神话、超英等；\n- 不肯循规蹈矩，总想做出点不一样的东西，经常被人贴上“有趣”的标签。",
+            "positionTypes": [
+                {
+                    "typeId": 15,
+                    "typeName": "策划类",
+                    "parentTypeId": 1
+                },
+                {
+                    "typeId": 1,
+                    "typeName": "游戏策划类"
+                }
+            ],
+            "workCities": [
+                {
+                    "cityId": 2,
+                    "cityName": "广州"
+                },
+                {
+                    "cityId": 84,
+                    "cityName": "杭州"
+                },
+                {
+                    "cityId": 373,
+                    "cityName": "上海"
+                }
+            ],
+            "externalTags": [
+                {
+                    "tagId": 5,
+                    "tagName": "创意鬼才"
+                },
+                {
+                    "tagId": 7,
+                    "tagName": "游戏玩家"
+                }
+            ],
+            "positionTypeAbbreviation": "策划类-游戏策划类"
+        }
+    }
+}
+
+cookie=P_INFO=y3415192498@163.com|1750297153|0|h72_client|00&99|null&null&null#hub&420500#10#0|&0||y3415192498@163.com; timing_user_id=time_HnHRmc25SL; hb_MA-8E16-605C3AFFE11F_source=campus.163.com; scrollTop=0; hb_MA-9ADA-91BF1A6C9E06_source=leihuo.163.com; NTES-RC-SESS=ZjM2N2E2M2EtZDQxOS00YThlLWE3MDAtMDcyYWVlOWMxMmQx

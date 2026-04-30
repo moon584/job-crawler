@@ -1,0 +1,263 @@
+company_id=C005
+职位列表
+请求url:https://hr.163.com/api/hr163/position/queryPage
+请求方法：post
+请求体:{
+  "currentPage": 1,
+  "pageSize": 10,
+  "workType": "1"
+}
+响应json:{
+    "code": 200,
+    "msg": null,
+    "data": {
+        "pages": 47,
+        "total": 465,
+        "list": [
+            {
+                "id": 61311,
+                "name": "市场营销设计实习生",
+                "workType": "1",
+                "firstPostTypeName": "用户体验及设计",
+                "recruitNum": 1,
+                "requirement": "1.有较设计和素材创意能力，关注市场动态，对游戏推广视觉有一定的了解和思考；\n2.能够熟练使用PS / AI等平面设计软件和AIGC相关工具；\n3.责任心强（这点很重要！），行动力高，脑洞大，善于沟通，有良好的团队协作能力和执行能力，善于学习和思考；\n4.重度MMO游戏玩家加分！\n5.抖音等短视频媒体、小红书、微博、B站等重度用户或大V加分！\n6.可以尽快入职，实习3个月以上，一周实习不少于4天。",
+                "description": "1.参与成熟游戏产品的市场品牌素材产出和推广，包括但不限于营销素材/广告素材的创意输出、设计师/画师合作、素材设计及落地、效果监控等；\n2.对接维护各类设计/素材/视觉类合作资源，完成相应的内外部沟通和流程工作；\n3.优质项目品牌支持你各类脑洞，超好团队氛围小哥哥小姐姐手把手让你经验值UPUP。",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "雷火事业群",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777537245000,
+                "product": "P008",
+                "productName": "网易游戏（雷火）",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 75845,
+                "name": "短视频摄像实习生",
+                "workType": "1",
+                "firstPostTypeName": "内容",
+                "recruitNum": 1,
+                "requirement": "1、2027年及之后毕业的全日制在校生，影视制作、摄影、数字媒体等相关专业优先；有短视频拍摄经验，熟悉抖音/B站等平台视觉风格。\n2、熟练使用主流相机（索尼、佳能等）及基础灯光、收音设备，了解构图、运镜、景别等视听语言，能独立完成中小场景拍摄。\n3、对科技/商业/科普内容有兴趣，日常关注科技资讯或知识类博主，具备基本的内容理解力，能读懂脚本重点并转化为画面。\n4、执行力强，沟通顺畅，能适应快节奏的拍摄任务，抗压能力好，每周可线下到岗5天，实习期不少于3个月。\n5、加分项：会使用PR/达芬奇/剪映做基础调色或剪辑；有汽车、器材类产品拍摄经验；自带设备优先。",
+                "description": "1、配合资深编导完成科技类短视频（科技解读/商业科普/汽车/泛科普等）的现场拍摄与布光工作，确保画面质量与内容表达一致。\n2、根据脚本独立完成素材采集，包括实拍、B-roll、产品特写、人物出镜等，能灵活运用镜头语言强化内容节奏与视觉吸引力。\n3、与编导、后期协作参与拍摄前的分镜讨论，提供可执行的拍摄方案，并在现场快速应对突发调整。\n4、协助管理摄影器材（相机、灯光、收音设备等），保证设备状态与拍摄进度。\n5、根据工作室业务需要，参与部分简单的现场场务、素材整理及辅助剪辑（如粗剪、打点等）。",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "元气事业部",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777534454000,
+                "product": "P006",
+                "productName": "网易元气",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 75844,
+                "name": "短视频内容创意（蛋仔派对）",
+                "workType": "1",
+                "firstPostTypeName": "市场渠道",
+                "recruitNum": 1,
+                "requirement": "1、熟悉脚本策划/拍摄执行/后期剪辑全流程，熟练使用Premiere、AE、剪映等工具，能系统性统筹从创意到成片的完整链路；\n2、网感敏锐、内容审美优秀、节奏把控精准、热点追踪高效；\n3、有短视频制作经验，有爆款内容创作案例（附作品数据），游戏行业优先；\n4、尊重流程，有良好的工作习惯，交付及时；\n5、摄制/美术背景、主动探索AIGC工具在内容创作中的应用（如AI脚本辅助、AI剪辑提效等），持续迭代自身的创作工作流；\n6、每周工作需在岗4-5天，至少可实习6个月及以上者优先。",
+                "description": "1、负责蛋仔派对在抖音、快手等短视频平台的内容创意策划，能够相对独立的跟踪落地短视频需求，产出高传播力的爆款短视频内容；\n2、结合游戏版本节奏及运营目标，提炼爆款内容的底层共性，建立标准化创意模板（SOP），并对接签约达人完成创意定制、内容品控与视频交付管理；\n3、持续跟踪短视频行业热点、平台算法变化与竞品动态，阶段性输出趋势洞察与选题方向。",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "0-3年",
+                "firstDepName": "Eggy事业部",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777532391000,
+                "product": "P041",
+                "productName": "网易游戏（互娱）",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 75841,
+                "name": "视觉设计实习生 ",
+                "workType": "1",
+                "firstPostTypeName": "市场渠道",
+                "recruitNum": 1,
+                "requirement": "1. 在校生，全职实习生（每周到岗5天），4个月以上实习期；\n2. 视觉传达、艺术设计、传播学、广告学等相关专业，有游戏行业、广告行业实习经历者优先；\n3. 诚实守信，责任心强，对自己参与的所有项目负责；\n4. 时间观念强，具备优秀的时间/项目管理能力；\n5. 在职期间需要体验特定游戏产品，热爱游戏者优先；",
+                "description": "1. 热爱游戏文化，对游戏行业有浓厚的兴趣，了解本司游戏并有深度游玩经验优先；\n2. 协助团队完成相关游戏视觉设计工作：包括网页、H5、小程序、长图、banner等；\n3. 具备较强的创意思维及团队合作意识，遇到问题积极沟通寻求帮助；\n4. 拥有较强的美术功底，设计基础扎实，色彩，平面，排版，字形，合成，造型等能力出色；\n5. 具备较强的审美能力，自学能力，关注游戏设计相关流行趋势；\n5.拥有较好的语言表达能力、沟通能力，懂得及时汇报负责项目的进度，跟进流程；\n6. 熟练掌握Photoshop、Illustrator、Figma、Sketch、Axure等设计软件，注意PS、Figma操作必须达到熟练级别；\n7.熟悉掌握市面上热门AIGC工具，能灵活将AI应用到实际工作内容；",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "市场支持中心",
+                "workPlaceList": [
+                    138
+                ],
+                "updateTime": 1777529935000,
+                "product": "P041",
+                "productName": "网易游戏（互娱）",
+                "workPlaceNameList": [
+                    "广州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 64009,
+                "name": "新媒体内容营销实习生（杭州）",
+                "workType": "1",
+                "firstPostTypeName": "市场渠道",
+                "recruitNum": 3,
+                "requirement": "1、本科及以上在读，大三或研0优先；\n2、对B端企业服务、SaaS行业感兴趣，有客户服务意识，逻辑清晰，学习能力强；\n3、了解主流新媒体玩法，是小红书重度用户，善于捕捉热点与事件话题优先;\n4、责任心强，沟通表达能力良好，执行能力强，工作高效；\n5、可持续实习3—6个月，每周出勤5天；",
+                "description": "1、参与网易ToC业务的新媒体用户运营工作，重点负责小红书账号日常运营、文案撰写和互动维护等；\n2、根据品牌或业务需求，负责小红书平台舆情监控，包括且不限于帖文内容评论、回评等；\n2、了解各平台引流机制和玩法，协助完成运营相关工作，及时提出迭代建议；\n4、协助完成其他市场及运营相关工作；",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "智能邮件事业部",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777519737000,
+                "product": "P032",
+                "productName": "网易智邮",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 70307,
+                "name": "游戏客户端开发实习生",
+                "workType": "1",
+                "firstPostTypeName": "游戏程序",
+                "recruitNum": 1,
+                "requirement": "1、计算机及相关专业本科及以上学历，精通C/C++或C#语言编程，熟悉LUA/Python等脚本语言；\n2、良好的3D/OpenGL图形学基础，具有Unity3D的开发经验，熟悉Unity3D引擎架构设计； \n3、良好的逻辑思维和编程习惯，具备独立解决技术问题的能力；\n4、有责任感，有良好的沟通能力，具备团队合作精神；\n5、能承受一定的工作压力，对游戏开发充满热情。",
+                "description": "1、使用Unity3D引擎进行iOS/Android平台游戏开发；\n2、与策划、美术保持良好沟通，确保程序功能与设计需求一致； \n3、研发所需的各类工具，编辑器等内容的再开发以及调整优化； \n4、针对各个发布平台进行游戏性能优化。\n",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "烈酷工作室",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777518544000,
+                "product": "P008",
+                "productName": "网易游戏（雷火）",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 75838,
+                "name": "内容运营实习生",
+                "workType": "1",
+                "firstPostTypeName": "运营",
+                "recruitNum": 1,
+                "requirement": "【全日制在校生，能近期到岗，一周实习5天，长期实习者优先】\n1、热爱音乐，好奇心强，性格开朗，善于沟通交流；\n2、有扎实文字功底和基础数据分析能力，有内容运营工作经验者优先；\n3、执行力强，沟通能力出众，有责任心；\n4、具有团队协作能力，抗压能力强；",
+                "description": "1、对用户在社交媒体上反馈的体验问题做回复，并能协同内部资源排查解决；\n2、结合热点与用户反馈，进行官方账号的日常内容运营，包括内容的发布、维护和管理；\n3、定期对用户反馈的问题做分析，持续优化平台单渠道用户体验。",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "0-3年",
+                "firstDepName": "音乐事业部",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777516634000,
+                "product": "P002",
+                "productName": "网易云音乐",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 75169,
+                "name": "高校活动执行实习生(暴雪/永劫无间项目)",
+                "workType": "1",
+                "firstPostTypeName": "市场渠道",
+                "recruitNum": 2,
+                "requirement": "1.2027届及之后毕业生，熟悉校园场景；\n2.深度暴雪、永劫无间玩家，熟悉暴雪、永劫产品世界观及玩家生态；\n3.具备网感，熟悉Z世代社交平台语言，有游戏官方账号运营经验者优先。",
+                "description": "1.协助策划并落地暴雪及永劫无间系列校园活动，包括高校赛事，主题快闪，电竞社团合作等场景执行；\n2.参与制定活动执行方案，完成场地布置，物资调配，流程推进等落地环节；\n3.协助制作活动传播素材，包括短视频策划/拍摄/基础剪辑，制作活动花絮短视频及传播效果数据追踪；\n4.协助进行活动效果反馈收集，整理活动照片，数据报告等执行档案。",
+                "reqEducationName": "不限",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "雷火事业群",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777458955000,
+                "product": "P008",
+                "productName": "网易游戏（雷火）",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 70151,
+                "name": "永劫无间赛事营销实习生",
+                "workType": "1",
+                "firstPostTypeName": "市场渠道",
+                "recruitNum": 2,
+                "requirement": "1、本科及以上学历，专业不限，2026届及以后毕业的同学；\n2、保证一周4-5天的工作时间，实习时间保证四个月以上；\n3、出色的沟通能力，较强的文案和创意能力，良好的执行力，积极乐观的心态；\n4、永劫无间重度爱好者，熟悉永劫无间赛事生态、选手，了解游戏电竞行业；\n5、网感好，关注热点，有视频号、抖音、B站等平台运营经验者优先。",
+                "description": "1、负责游戏赛事日常生态运营，跟进游戏赛事生态发展并对接内部部门及外部供应商，对各平台官方发布的生态活动的效果进行监测分析，复盘总结；\n2、跟进生态日常活动、赛事节点活动、平台活动等方面规划生态产出内容，监修赛事视频、平面、文字等物料；进行素材管理及同步，确保项目节点素材物料的准确使用；\n3、协助进行游戏赛事营销创意产出，结合短视频平台热点及流行趋势，产出视频内容方向策划；\n4、协助处理部门日常基础性工作。",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "雷火事业群",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777458379000,
+                "product": "P008",
+                "productName": "网易游戏（雷火）",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            },
+            {
+                "id": 75834,
+                "name": "社区运营实习生（蛋仔派对）",
+                "workType": "1",
+                "firstPostTypeName": "市场渠道",
+                "recruitNum": 1,
+                "requirement": "1、热爱游戏，对游戏运营、玩家生态和社区氛围有兴趣，有相关游戏经历者优先；\n2、对社区平台、论坛、公众号、社媒平台等有一定了解，具备从玩家行为和社区动态中捕捉潜在趋势与需求的初步能力，有内容运营或社区运营经验者优先；\n3、具备较好的文案感知力，能辨别什么样的内容\"能打动玩家\"，协助完成活动公告、社区帖子、玩家沟通等内容撰写，对内容质量有追求；\n4、AI工具应用能力：熟练使用AIGC工具（如ChatGPT、Midjourney等）进行内容辅助生产，有一定PS平面设计基础；\n5、每周工作需在岗 4-5 天，至少可实习 6 个月及以上者优先。",
+                "description": "1、社区活动策划与执行：参与蛋仔派对官方社区活动的策划与落地执行，基于玩家行为洞察和社区热点趋势，协助设计能引发玩家共鸣与参与的社区活动方案，提升玩家活跃度与社区氛围；\n2、玩家生态感知与互动运营：深入蛋仔派对玩家社区，实时感知玩家情绪、舆论风向及核心诉求，协助进行玩家沟通与关系维护，针对不同社区氛围灵活调整互动策略与沟通话术；\n3、多渠道内容运营与维护：协助游戏在各渠道平台（官网、社区、社媒等）的活动配置、页面更新与信息发布，结合平台调性产出适配内容，保障信息传达的准确性与吸引力；\n4、运营素材整合与跨部门协同：配合项目运营需求，支持活动素材整理、文案撰写发布，主动进行跨部门沟通协调，推动运营任务高效落地；\n5、AI工具赋能运营提效：熟练运用AIGC工具辅助内容生产（如素材初稿生成、数据整理、图文排版等），提升日常运营效率，将更多精力投入策略思考与玩家洞察。",
+                "reqEducationName": "本科",
+                "reqWorkYearsName": "不限",
+                "firstDepName": "Eggy事业部",
+                "workPlaceList": [
+                    229
+                ],
+                "updateTime": 1777455114000,
+                "product": "P041",
+                "productName": "网易游戏（互娱）",
+                "workPlaceNameList": [
+                    "杭州市"
+                ],
+                "geekPassionateTalentFlag": 0,
+                "beeUrl": null
+            }
+        ],
+        "lastPage": false
+    },
+    "subCode": null,
+    "traceId": "cfb3ea45e6126ec4"
+}
+
+
+job_url:https://hr.163.com/job-detail.html?id=61311&lang=zh
+cookie=P_INFO=y3415192498@163.com|1750297153|0|h72_client|00&99|null&null&null#hub&420500#10#0|&0||y3415192498@163.com; hb_MA-9ADA-91BF1A6C9E06_source=cn.bing.com; timing_user_id=time_HnHRmc25SL; hb_MA-8E16-605C3AFFE11F_source=campus.163.com; userName=; accountType=; JSESSIONID=092045D46ADB443669534291958396DA
+
+以下页面不用爬取，职位列表页面就可以获取所有信息。
+"""职位详情页
+请求url:
+请求方法：
+请求体:
+响应json:"""

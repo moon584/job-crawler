@@ -3,6 +3,7 @@ from 腾讯.campus import get_detail as _tencent_campus_get_detail
 from 美团.main import get_detail as _meituan_get_detail
 from 拼多多.campus import get_detail as _pdd_get_detail
 from 阿里巴巴.campus import get_detail as _alibaba_get_detail
+from 网易.intern_2 import get_detail as _netease_game_intern_get_detail
 
 import pymysql
 from db_conn import connect_db
@@ -26,6 +27,8 @@ _DISPATCH = {
     ("C008", 2): _pdd_get_detail,
     # 阿里巴巴（仅实习）
     ("C002", 2): _alibaba_get_detail,
+    # 网易游戏互娱（仅实习）
+    ("C005", 2): _netease_game_intern_get_detail,
 }
 
 
